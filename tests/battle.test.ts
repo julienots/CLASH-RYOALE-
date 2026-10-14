@@ -255,7 +255,7 @@ describe('Capacités spéciales', () => {
     const t = b.spawnUnit(0, 'titan_ossuaire', 9, 24, 9, null, 0);
     b.dealDamage(null, 1, t, t.maxHp * 2, {});
     expect(t.alive).toBe(true);
-    expect(t.hp).toBeCloseTo(t.maxHp * 0.4, 0);
+    expect(t.hp).toBeCloseTo(t.maxHp * 0.3, 0);
     b.dealDamage(null, 1, t, t.maxHp * 2, {});
     b.step();
     expect(t.alive).toBe(false);
@@ -349,7 +349,7 @@ describe('Capacités spéciales', () => {
     const ally = b.spawnUnit(0, 'charognard', 5, 24, 9, null, 0);
     b.step();
     expect(foe.fear).toBeCloseTo(0.65);
-    expect(ally.haste).toBeCloseTo(1.35);
+    expect(ally.haste).toBeCloseTo(1.45);
   });
   it('bouclier collectif et soin', () => {
     const b = makeBattle(deckWith('charognard'));

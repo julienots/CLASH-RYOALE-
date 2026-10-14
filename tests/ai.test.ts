@@ -34,12 +34,14 @@ describe('IA adverse', () => {
     expect(b.players[1].stats.cardsPlayed).toBeGreaterThan(0);
   });
 
-  it('un bot difficile bat un bot débutant plus souvent', () => {
-    let hard = 0, easy = 0;
-    for (let s = 0; s < 8; s++) {
-      const r = match(100 + s, 'abyssal', 'initie').result!;
-      if (r.winner === 0) hard++; else if (r.winner === 1) easy++;
+  it('la difficulté est croissante : Abyssal et Chasseur battent Initié nettement', () => {
+    for (const d of ['abyssal', 'chasseur'] as Difficulty[]) {
+      let hard = 0, easy = 0;
+      for (let s = 0; s < 20; s++) {
+        const r = match(100 + s, d, 'initie').result!;
+        if (r.winner === 0) hard++; else if (r.winner === 1) easy++;
+      }
+      expect(hard, d).toBeGreaterThan(easy * 1.5);
     }
-    expect(hard).toBeGreaterThan(easy);
-  });
+  }, 60000);
 });

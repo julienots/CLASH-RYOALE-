@@ -40,6 +40,7 @@ export function generateBotDeck(rng: Rng): string[] {
   pick((c) => c.kind === 'spell' && c.spell!.affects !== 'allies' && c.cost <= 3, 1, deck);
   pick((c) => c.kind === 'spell' && c.spell!.affects !== 'allies' && c.cost >= 3, 1, deck);
   pick((c) => c.kind === 'unit' && c.cost <= 2, 1, deck); // cycle
+  if (rng.next() < 0.2) pick((c) => c.kind === 'spell' && c.spell!.affects === 'allies', 1, deck); // sort de soutien
   pick((c) => c.kind !== 'spell', 8 - deck.length, deck);
   return deck.slice(0, 8);
 }

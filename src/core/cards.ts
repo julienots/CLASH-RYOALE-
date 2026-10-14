@@ -44,7 +44,7 @@ unit('larve_rongeuse', 'Larve Rongeuse', { hp: 90, damage: 60, hitSpeed: 1.0, ra
   visual: vis('worm', 0.6, 'chair', { eyes: 0, spikes: 3 }) });
 unit('charognard', 'Charognard', { hp: 1100, damage: 140, hitSpeed: 1.2, range: 0.7, speed: 1.0, targets: 'ground',
   visual: vis('biped', 1.0, 'ossuaire', { c1: '#b8ad94', eyes: 2, spikes: 2, horns: 1 }) });
-unit('mante_corne', 'Mante-Corne', { hp: 750, damage: 210, hitSpeed: 1.3, range: 0.9, speed: 1.33, targets: 'ground',
+unit('mante_corne', 'Mante-Corne', { hp: 860, damage: 210, hitSpeed: 1.3, range: 0.9, speed: 1.33, targets: 'ground',
   visual: vis('mantis', 1.0, 'chitine', { eyes: 2, limbs: 4, horns: 2 }) });
 unit('goule_jumelle', 'Goule Jumelle', { hp: 420, damage: 95, hitSpeed: 1.1, range: 0.6, speed: 1.33, targets: 'ground', radius: 0.38, mass: 3,
   visual: vis('biped', 0.8, 'ossuaire', { c1: '#9a8f7a', c3: '#7affb2', eyes: 2, spikes: 4 }) });
@@ -66,7 +66,7 @@ unit('meute_crocs', 'Meute de Crocs', { hp: 360, damage: 85, hitSpeed: 0.9, rang
   visual: vis('quadruped', 0.8, 'chair', { c1: '#6d1f24', limbs: 4, eyes: 4, spikes: 5 }) });
 unit('osselets_rampants', 'Osselet Rampant', { hp: 75, damage: 75, hitSpeed: 1.0, range: 0.5, speed: 1.4, targets: 'ground', radius: 0.3, mass: 1,
   visual: vis('skeletal', 0.55, 'ossuaire', { eyes: 1, limbs: 6 }) });
-unit('abomination_suturee', 'Abomination Suturée', { hp: 3200, damage: 260, hitSpeed: 1.6, range: 0.8, speed: 0.75, targets: 'ground', radius: 0.85, mass: 18,
+unit('abomination_suturee', 'Abomination Suturée', { hp: 3000, damage: 220, hitSpeed: 1.6, range: 0.8, speed: 0.75, targets: 'ground', radius: 0.85, mass: 18,
   abilities: [{ type: 'deathSpawn', unit: 'larve', count: 4 }],
   visual: vis('hulk', 1.55, 'chair', { c1: '#a3474a', eyes: 3, limbs: 3, tentacles: 3 }) });
 unit('sentinelle_rouillee', 'Sentinelle Rouillée', { hp: 1250, damage: 130, hitSpeed: 1.2, range: 0.7, speed: 1.0, targets: 'ground', radius: 0.5, mass: 6,
@@ -92,11 +92,11 @@ unit('sangsue_geante', 'Sangsue Géante', { hp: 900, damage: 40, hitSpeed: 0.4, 
 unit('berserker_greffe', 'Berserker Greffé', { hp: 1300, damage: 190, hitSpeed: 1.1, range: 0.7, speed: 1.33, targets: 'ground', radius: 0.5, mass: 6,
   abilities: [{ type: 'riverLeap' }],
   visual: vis('biped', 1.1, 'chair', { c2: '#b0b5bd', eyes: 1, limbs: 3, spikes: 4 }) });
-unit('titan_ossuaire', 'Titan Ossuaire', { hp: 4800, damage: 300, hitSpeed: 1.6, range: 1.0, speed: 0.75, targets: 'ground', radius: 0.95, mass: 22,
-  abilities: [{ type: 'reviveOnce', hpPct: 0.4 }, { type: 'deathSpawn', unit: 'osselet', count: 6 }],
+unit('titan_ossuaire', 'Titan Ossuaire', { hp: 3800, damage: 260, hitSpeed: 1.6, range: 1.0, speed: 0.75, targets: 'ground', radius: 0.95, mass: 22,
+  abilities: [{ type: 'reviveOnce', hpPct: 0.3 }, { type: 'deathSpawn', unit: 'osselet', count: 6 }],
   visual: vis('skeletal', 1.85, 'ossuaire', { eyes: 3, horns: 4, spikes: 8, limbs: 4 }) });
-unit('bouche_sans_fin', 'La Bouche-sans-Fin', { hp: 3000, damage: 180, hitSpeed: 1.4, range: 0.9, speed: 0.75, targets: 'ground', radius: 0.85, mass: 18,
-  abilities: [{ type: 'devour', interval: 8, maxHp: 900 }],
+unit('bouche_sans_fin', 'La Bouche-sans-Fin', { hp: 2700, damage: 180, hitSpeed: 1.4, range: 0.9, speed: 0.75, targets: 'ground', radius: 0.85, mass: 18,
+  abilities: [{ type: 'devour', interval: 10, maxHp: 700 }],
   visual: vis('blob', 1.6, 'abysse', { c1: '#24304f', c3: '#ff5af0', eyes: 9, tentacles: 6 }) });
 unit('ecorcheur_nocturne', 'Écorcheur Nocturne', { hp: 1000, damage: 300, hitSpeed: 1.5, range: 0.8, speed: 1.33, targets: 'ground', radius: 0.45, mass: 5,
   abilities: [{ type: 'stealth' }],
@@ -105,7 +105,7 @@ unit('crabe_siege', 'Crabe de Siège', { hp: 1800, damage: 120, hitSpeed: 1.2, r
   visual: vis('crab', 1.3, 'abysse', { eyes: 2, limbs: 6, spikes: 4 }) });
 unit('moissonneur_vertebres', 'Moissonneur de Vertèbres', { hp: 1600, damage: 200, hitSpeed: 1.5, range: 1.1, speed: 1.0, targets: 'ground', splash: 1.5, radius: 0.55, mass: 7,
   visual: vis('skeletal', 1.25, 'ossuaire', { c3: '#ff9f3d', eyes: 2, limbs: 2, spikes: 10 }) });
-unit('homoncule_vapeur', 'Homoncule à Vapeur', { hp: 260, damage: 70, hitSpeed: 1.0, range: 0.6, speed: 1.0, targets: 'ground', radius: 0.38, mass: 3,
+unit('homoncule_vapeur', 'Homoncule à Vapeur', { hp: 330, damage: 85, hitSpeed: 1.0, range: 0.6, speed: 1.0, targets: 'ground', radius: 0.38, mass: 3,
   abilities: [{ type: 'deathBlast', damage: 60, radius: 1 }],
   visual: vis('mech', 0.7, 'rouille', { c3: '#9fe0ff', eyes: 1, variant: 14 }) });
 unit('chimere_suturee', 'Chimère Suturée', { hp: 2000, damage: 170, hitSpeed: 1.2, range: 0.8, speed: 1.0, targets: 'ground', radius: 0.65, mass: 10,
@@ -113,8 +113,8 @@ unit('chimere_suturee', 'Chimère Suturée', { hp: 2000, damage: 170, hitSpeed: 
   visual: vis('quadruped', 1.3, 'chair', { c2: '#d6c3a5', eyes: 6, horns: 3, limbs: 4, tentacles: 2 }) });
 unit('fouisseuse_chitineuse', 'Fouisseuse Chitineuse', { hp: 1000, damage: 120, hitSpeed: 1.2, range: 0.6, speed: 1.0, targets: 'ground', radius: 0.45, mass: 5,
   visual: vis('spider', 0.95, 'chitine', { c1: '#6e5a2b', limbs: 8, eyes: 6 }) });
-unit('l_innommable', "L'Innommable", { hp: 5200, damage: 260, hitSpeed: 1.4, range: 1.0, speed: 0.75, targets: 'ground', radius: 1.0, mass: 25,
-  abilities: [{ type: 'tidePull', interval: 9, radius: 4.5, stun: 0.8, damage: 150 }, { type: 'aura', effect: 'fear', value: 0.25, radius: 3 }],
+unit('l_innommable', "L'Innommable", { hp: 4000, damage: 220, hitSpeed: 1.4, range: 1.0, speed: 0.75, targets: 'ground', radius: 1.0, mass: 25,
+  abilities: [{ type: 'tidePull', interval: 10, radius: 4.5, stun: 0.6, damage: 120 }, { type: 'aura', effect: 'fear', value: 0.25, radius: 3 }],
   visual: vis('hulk', 2.0, 'abysse', { c1: '#120f22', c2: '#3b2b6e', c3: '#8affff', eyes: 12, tentacles: 8, horns: 2 }) });
 unit('chevaucheur_scolopendre', 'Chevaucheur de Scolopendre', { hp: 1700, damage: 210, hitSpeed: 1.4, range: 0.8, speed: 1.33, targets: 'ground', radius: 0.6, mass: 9,
   abilities: [{ type: 'charge', distance: 2.5, mult: 2, speedMult: 2 }],
@@ -147,27 +147,27 @@ unit('chantre_noye', 'Chantre Noyé', { hp: 750, damage: 130, hitSpeed: 1.6, ran
   visual: vis('priest', 1.0, 'abysse', { c1: '#355a6b', eyes: 0, tentacles: 6 }) });
 unit('canonnier_vapeur', 'Canonnier à Vapeur', { hp: 1400, damage: 300, hitSpeed: 2.5, range: 7, speed: 0.75, targets: 'buildings', sight: 7.5, projectile: 8, radius: 0.6, mass: 10,
   visual: vis('mech', 1.25, 'rouille', { eyes: 2, spikes: 0, horns: 0, limbs: 4 }) });
-unit('vierge_mille_yeux', 'La Vierge aux Mille Yeux', { hp: 1100, damage: 50, hitSpeed: 0.4, range: 5.5, speed: 1.0, targets: 'both', projectile: 40,
-  abilities: [{ type: 'rampUp', stages: [1, 3, 8], stageTime: 2 }],
+unit('vierge_mille_yeux', 'La Vierge aux Mille Yeux', { hp: 950, damage: 50, hitSpeed: 0.4, range: 5.5, speed: 1.0, targets: 'both', projectile: 40,
+  abilities: [{ type: 'rampUp', stages: [1, 2.5, 6], stageTime: 2 }],
   visual: vis('priest', 1.2, 'abysse', { c1: '#3d2a55', c3: '#ffe36b', eyes: 14, tentacles: 2 }) });
 unit('harponneur_noye', 'Harponneur Noyé', { hp: 550, damage: 120, hitSpeed: 1.3, range: 6, speed: 1.0, targets: 'ground', projectile: 14,
   abilities: [{ type: 'slowOnHit', amount: 0.2, duration: 1.5 }],
   visual: vis('biped', 0.95, 'abysse', { c1: '#2b5d63', eyes: 4, tentacles: 2 }) });
 
 // ---------------------------------------------------------------- Volants & déplacements spéciaux (8)
-unit('mouche_os', 'Mouche-Os', { hp: 80, damage: 50, hitSpeed: 1.0, range: 0.6, speed: 1.67, targets: 'both', flying: true, radius: 0.28, mass: 1,
+unit('mouche_os', 'Mouche-Os', { hp: 105, damage: 60, hitSpeed: 1.0, range: 0.6, speed: 1.67, targets: 'both', flying: true, radius: 0.28, mass: 1,
   visual: vis('fly', 0.45, 'chitine', { c1: '#c4b994', eyes: 2 }) });
 unit('oeil_aile', 'Œil Ailé', { hp: 500, damage: 110, hitSpeed: 1.2, range: 4.5, speed: 1.33, targets: 'both', flying: true, projectile: 10,
   visual: vis('eye', 0.9, 'abysse', { eyes: 1, limbs: 2 }) });
 unit('vouivre_rouillee', 'Vouivre Rouillée', { hp: 1100, damage: 150, hitSpeed: 1.6, range: 3.5, speed: 1.33, targets: 'both', flying: true, projectile: 8, splash: 1.3, radius: 0.6, mass: 7,
   visual: vis('winged', 1.15, 'rouille', { eyes: 2, horns: 2, spikes: 4 }) });
-unit('sac_spores', 'Sac de Spores', { hp: 1300, damage: 500, hitSpeed: 3.0, range: 0.5, speed: 1.0, targets: 'buildings', sight: 8, flying: true, splash: 1.5, radius: 0.7, mass: 8,
+unit('sac_spores', 'Sac de Spores', { hp: 1500, damage: 560, hitSpeed: 3.0, range: 0.5, speed: 1.0, targets: 'buildings', sight: 8, flying: true, splash: 1.5, radius: 0.7, mass: 8,
   abilities: [{ type: 'deathBlast', damage: 200, radius: 2 }],
   visual: vis('jelly', 1.2, 'chair', { c1: '#8c6a2e', c3: '#c6ff4a', eyes: 0, tentacles: 6 }) });
 unit('sauteur_marais', 'Sauteur des Marais', { hp: 900, damage: 150, hitSpeed: 1.3, range: 0.7, speed: 1.33, targets: 'ground',
   abilities: [{ type: 'riverLeap' }],
   visual: vis('quadruped', 0.95, 'abysse', { c1: '#3a5d3a', eyes: 2, limbs: 4, spikes: 3 }) });
-unit('wyrm_cendres', 'Wyrm des Cendres', { hp: 2800, damage: 140, hitSpeed: 1.5, range: 2.5, speed: 1.0, targets: 'both', flying: true, projectile: 10, splash: 2, radius: 0.85, mass: 16,
+unit('wyrm_cendres', 'Wyrm des Cendres', { hp: 2000, damage: 110, hitSpeed: 1.5, range: 2.5, speed: 1.0, targets: 'both', flying: true, projectile: 10, splash: 2, radius: 0.85, mass: 16,
   abilities: [{ type: 'burnTrail', every: 3, dps: 90, radius: 2, duration: 4 }],
   visual: vis('winged', 1.7, 'ossuaire', { c1: '#4a4040', c3: '#ff7b2a', eyes: 4, horns: 6, spikes: 10 }) });
 unit('phalene_spectrale', 'Phalène Spectrale', { hp: 350, damage: 140, hitSpeed: 1.0, range: 0.7, speed: 1.67, targets: 'ground', flying: true, radius: 0.4, mass: 2,
@@ -184,8 +184,8 @@ unit('pretresse_sutures', 'Prêtresse des Sutures', { hp: 900, damage: 70, hitSp
 unit('reine_ruche', 'Reine de la Ruche', { hp: 2400, damage: 150, hitSpeed: 1.3, range: 0.8, speed: 0.75, targets: 'ground', radius: 0.8, mass: 16,
   abilities: [{ type: 'spawner', unit: 'drone_ruche', count: 2, interval: 6 }],
   visual: vis('insect', 1.6, 'chitine', { c1: '#7a6a1e', c3: '#f2ff7a', limbs: 6, eyes: 6, horns: 3, spikes: 4 }) });
-unit('tambour_ossements', "Tambour d'Ossements", { hp: 1100, damage: 80, hitSpeed: 1.0, range: 0.7, speed: 1.0, targets: 'ground', radius: 0.55, mass: 7,
-  abilities: [{ type: 'aura', effect: 'haste', value: 1.35, radius: 3.5 }],
+unit('tambour_ossements', "Tambour d'Ossements", { hp: 1300, damage: 80, hitSpeed: 1.0, range: 0.7, speed: 1.0, targets: 'ground', radius: 0.55, mass: 7,
+  abilities: [{ type: 'aura', effect: 'haste', value: 1.45, radius: 3.5 }],
   visual: vis('brute', 1.1, 'ossuaire', { c3: '#ffd36b', eyes: 2, spikes: 3, horns: 1 }) });
 unit('nourrice_larves', 'Nourrice à Larves', { hp: 1400, damage: 80, hitSpeed: 1.3, range: 0.7, speed: 0.75, targets: 'ground', radius: 0.65, mass: 10,
   abilities: [{ type: 'spawner', unit: 'larve', count: 2, interval: 5 }],
@@ -212,7 +212,7 @@ unit('nid_larves', 'Nid de Larves', { hp: 1000, damage: 0, hitSpeed: 1, range: 0
 unit('brasier_ossements', "Brasier d'Ossements", { hp: 1200, damage: 140, hitSpeed: 1.6, range: 5, speed: 0, targets: 'ground', building: true, projectile: 9, splash: 1.5, lifetime: 35, radius: 0.9, mass: 999,
   visual: vis('brazier', 1.3, 'ossuaire', { c3: '#ff8a2a', spikes: 6 }) });
 unit('piege_machoires', 'Piège à Mâchoires', { hp: 400, damage: 0, hitSpeed: 1, range: 0, speed: 0, targets: 'ground', building: true, lifetime: 40, radius: 0.6, mass: 999,
-  abilities: [{ type: 'trap', trigger: 1.3, damage: 420, radius: 1.6, root: 2 }],
+  abilities: [{ type: 'trap', trigger: 1.6, damage: 600, radius: 1.9, root: 2.5 }],
   visual: vis('trap', 1.0, 'rouille', { spikes: 10 }) });
 unit('puits_essence', "Puits d'Essence", { hp: 900, damage: 0, hitSpeed: 1, range: 0, speed: 0, targets: 'ground', building: true, lifetime: 60, radius: 0.9, mass: 999,
   abilities: [{ type: 'essencePump', amount: 1, interval: 8.5 }],
@@ -289,11 +289,11 @@ card('berserker_greffe', { name: 'Berserker Greffé', rarity: 'epique', faction:
   strengths: 'Pression imprévisible.', weaknesses: 'Points de vie moyens.', counters: ['mante_corne', 'piege_machoires'] });
 card('titan_ossuaire', { name: 'Titan Ossuaire', rarity: 'legendaire', faction: 'ossuaire', cost: 8, kind: 'unit', category: 'melee', role: 'Tank légendaire',
   description: 'Colosse d\'os qui se relève une fois puis s\'effondre en six osselets.', spawns: one('titan_ossuaire'),
-  signature: 'Reliquaire : à sa première mort, se reconstitue avec 40 % de vie. À la seconde, libère 6 osselets.',
+  signature: 'Reliquaire : à sa première mort, se reconstitue avec 30 % de vie. À la seconde, libère 6 osselets.',
   strengths: 'Résistance hors norme.', weaknesses: 'Coûte 8 : une contre-poussée adverse est redoutable.', counters: ['sangsue_geante', 'vierge_mille_yeux', 'brume_terreur'] });
 card('bouche_sans_fin', { name: 'La Bouche-sans-Fin', rarity: 'legendaire', faction: 'abysse', cost: 6, kind: 'unit', category: 'melee', role: 'Dévoreuse',
   description: 'Gueule abyssale qui engloutit d\'un coup une unité terrestre affaiblie.', spawns: one('bouche_sans_fin'),
-  signature: 'Engloutir : toutes les 8 s, avale une unité terrestre proche ayant 900 PV ou moins (pas les bâtiments).',
+  signature: 'Engloutir : toutes les 10 s, avale une unité terrestre proche ayant 700 PV ou moins (pas les bâtiments).',
   strengths: 'Supprime les menaces moyennes instantanément.', weaknesses: 'Lente ; volants et tirs l\'usent.', counters: ['oeil_aile', 'vouivre_rouillee', 'sangsue_geante'] });
 card('ecorcheur_nocturne', { name: 'Écorcheur Nocturne', rarity: 'mythique', faction: 'chair', cost: 4, kind: 'unit', category: 'melee', role: 'Furtif',
   description: 'Invisible et inciblable tant qu\'il n\'attaque pas.', spawns: one('ecorcheur_nocturne'),
@@ -315,7 +315,7 @@ card('fouisseuse_chitineuse', { name: 'Fouisseuse Chitineuse', rarity: 'rare', f
   strengths: 'Attaque les tireurs à l\'arrière.', weaknesses: 'Stats modestes pour le coût.', counters: ['sentinelle_rouillee', 'mante_corne'] });
 card('l_innommable', { name: "L'Innommable", rarity: 'abyssal', faction: 'abysse', cost: 8, kind: 'unit', category: 'melee', role: 'Horreur abyssale',
   description: 'Une chose sans forme qui attire et paralyse tout ce qui l\'approche.', spawns: one('l_innommable'),
-  signature: 'Marée noire : toutes les 9 s, attire les ennemis à 4,5 cases, inflige 150 dégâts et les étourdit 0,8 s. Aura de peur permanente.',
+  signature: 'Marée noire : toutes les 10 s, attire les ennemis à 4,5 cases, inflige 120 dégâts et les étourdit 0,6 s. Aura de peur permanente.',
   strengths: 'Contrôle de zone écrasant.', weaknesses: 'Coût de 8 et lenteur extrême ; les volants l\'ignorent.', counters: ['vouivre_rouillee', 'sangsue_geante', 'oeil_aile'] });
 card('chevaucheur_scolopendre', { name: 'Chevaucheur de Scolopendre', rarity: 'mythique', faction: 'chitine', cost: 5, kind: 'unit', category: 'melee', role: 'Cavalier',
   description: 'Charge à pleine vitesse et double les dégâts du premier coup.', spawns: one('chevaucheur_scolopendre'),
@@ -354,7 +354,7 @@ card('canonnier_vapeur', { name: 'Canonnier à Vapeur', rarity: 'epique', factio
   strengths: 'Détruit les tours sans entrer à portée de mêlée.', weaknesses: 'Ignore les unités.', counters: ['bourreau_chitineux', 'meute_crocs'] });
 card('vierge_mille_yeux', { name: 'La Vierge aux Mille Yeux', rarity: 'legendaire', faction: 'abysse', cost: 5, kind: 'unit', category: 'distance', role: 'Regard destructeur',
   description: 'Un rayon dont l\'intensité augmente tant que la cible reste fixée.', spawns: one('vierge_mille_yeux'),
-  signature: 'Regard fixe : rayon ×1 → ×3 → ×8 après 2 s puis 4 s sur la même cible. Changer de cible réinitialise.',
+  signature: 'Regard fixe : rayon ×1 → ×2,5 → ×6 après 2 s puis 4 s sur la même cible. Changer de cible réinitialise.',
   strengths: 'Annihile les tanks.', weaknesses: 'Essaims et étourdissements réinitialisent le regard.', counters: ['larve_rongeuse', 'chantre_noye', 'brume_terreur'] });
 card('harponneur_noye', { name: 'Harponneur Noyé', rarity: 'commun', faction: 'abysse', cost: 3, kind: 'unit', category: 'distance', role: 'Harpon',
   description: 'Harponne les unités au sol à 6 cases et les ralentit.', spawns: one('harponneur_noye'),
@@ -371,7 +371,7 @@ card('vouivre_rouillee', { name: 'Vouivre Rouillée', rarity: 'epique', faction:
   description: 'Crache des scories en fusion sur une zone.', spawns: one('vouivre_rouillee'),
   strengths: 'Zone aérienne, solide.', weaknesses: 'Tirs anti-aériens concentrés.', counters: ['fusilier_rivets', 'tour_dards'] });
 card('sac_spores', { name: 'Sac de Spores', rarity: 'epique', faction: 'chair', cost: 5, kind: 'unit', category: 'aerien', role: 'Bombardier aérien',
-  description: 'Dérive vers les bâtiments et lâche des sacs explosifs (500 dégâts).', spawns: one('sac_spores'),
+  description: 'Dérive vers les bâtiments et lâche des sacs explosifs (560 dégâts).', spawns: one('sac_spores'),
   strengths: 'Dévastateur s\'il atteint une tour.', weaknesses: 'Lent, sans défense.', counters: ['essaim_mouches', 'arbaletrier_os'] });
 card('sauteur_marais', { name: 'Sauteur des Marais', rarity: 'rare', faction: 'abysse', cost: 3, kind: 'unit', category: 'aerien', role: 'Saut de rivière',
   description: 'Batracien difforme qui franchit la rivière d\'un bond.', spawns: one('sauteur_marais'),
@@ -396,7 +396,7 @@ card('reine_ruche', { name: 'Reine de la Ruche', rarity: 'legendaire', faction: 
   signature: 'Ponte incessante : génère 2 drones volants toutes les 6 s tant qu\'elle vit.',
   strengths: 'Valeur croissante si ignorée.', weaknesses: 'Lente, cible au sol.', counters: ['sangsue_geante', 'tourmenteur_electrique', 'vierge_mille_yeux'] });
 card('tambour_ossements', { name: "Tambour d'Ossements", rarity: 'epique', faction: 'ossuaire', cost: 4, kind: 'unit', category: 'support', role: 'Galvanisant',
-  description: 'Son rythme accélère de 35 % alliés proches (vitesse et attaque).', spawns: one('tambour_ossements'),
+  description: 'Son rythme accélère de 45 % les alliés proches (vitesse et attaque).', spawns: one('tambour_ossements'),
   strengths: 'Démultiplie une poussée.', weaknesses: 'Faibles dégâts propres.', counters: ['mante_corne', 'fusilier_rivets'] });
 card('nourrice_larves', { name: 'Nourrice à Larves', rarity: 'rare', faction: 'chair', cost: 5, kind: 'unit', category: 'support', role: 'Invocatrice',
   description: 'Expulse deux larves toutes les 5 s.', spawns: one('nourrice_larves'),
@@ -440,9 +440,9 @@ card('fosse_vorace', { name: 'Fosse Vorace', rarity: 'epique', faction: 'abysse'
   spell: { radius: 4, delay: 0.2, duration: 3, pull: 2.2, dps: 40, damage: 250, towerPct: 0.3 },
   strengths: 'Regroupe pour vos dégâts de zone.', weaknesses: 'N\'affecte pas les bâtiments.', counters: [] });
 card('comete_rouille', { name: 'Comète de Rouille', rarity: 'legendaire', faction: 'rouille', cost: 6, kind: 'spell', category: 'sort', role: 'Frappe orbitale',
-  description: 'Une comète de fer rouillé s\'écrase après 1,8 s : 900 dégâts et cratère brûlant.',
+  description: 'Une comète de fer rouillé s\'écrase après 1,8 s : 640 dégâts et cratère brûlant.',
   signature: 'Cratère : laisse une zone brûlante 4 s (60 dégâts/s).',
-  spell: { radius: 3, delay: 1.8, damage: 900, towerPct: 0.3, crater: { dps: 60, duration: 4 } },
+  spell: { radius: 2.8, delay: 1.8, damage: 640, towerPct: 0.25, crater: { dps: 60, duration: 4 } },
   strengths: 'Achève tours et unités coûteuses.', weaknesses: 'Très coûteux, délai lisible.', counters: [] });
 
 // --- Bâtiments & pièges (5)
@@ -456,7 +456,7 @@ card('brasier_ossements', { name: "Brasier d'Ossements", rarity: 'epique', facti
   description: 'Bûcher d\'os qui projette des braises sur une zone (35 s).', spawns: one('brasier_ossements'),
   strengths: 'Nettoie les essaims au sol.', weaknesses: 'Pas d\'anti-aérien.', counters: ['essaim_mouches', 'sac_spores'] });
 card('piege_machoires', { name: 'Piège à Mâchoires', rarity: 'rare', faction: 'rouille', cost: 2, kind: 'building', category: 'batiment', role: 'Piège caché',
-  description: 'Invisible : se referme sur le premier ennemi au sol (420 dégâts, immobilise 2 s).', spawns: one('piege_machoires'),
+  description: 'Invisible : se referme sur le premier ennemi au sol (600 dégâts, immobilise 2,5 s).', spawns: one('piege_machoires'),
   strengths: 'Surprend les charges et assassins.', weaknesses: 'Ignore les volants.', counters: ['essaim_mouches', 'phalene_spectrale'] });
 card('puits_essence', { name: "Puits d'Essence", rarity: 'epique', faction: 'abysse', cost: 6, kind: 'building', category: 'batiment', role: 'Économie',
   description: 'Pompe l\'essence des abysses : +1 essence toutes les 8,5 s (60 s).', spawns: one('puits_essence'),

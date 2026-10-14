@@ -7,12 +7,15 @@ import { ARENA_H, Battle, BRIDGES, type Entity, RIVER_Y } from './battle';
 export type Difficulty = 'initie' | 'chasseur' | 'cauchemar' | 'abyssal';
 
 export const DIFFICULTIES: Record<Difficulty, {
-  label: string; reaction: number; mistake: number; attackAt: number; levelOffset: number; smartSpells: boolean; description: string;
+  label: string; reaction: number; mistake: number; attackAt: number; levelOffset: number; smartSpells: boolean;
+  /** Laisse la menace franchir la rivière pour qu'elle subisse les tirs des tours avant de défendre. */
+  patientDefense: boolean;
+  description: string;
 }> = {
-  initie: { label: 'Initié', reaction: 1.8, mistake: 0.35, attackAt: 9.5, levelOffset: -1, smartSpells: false, description: 'Lent à réagir, fait des erreurs.' },
-  chasseur: { label: 'Chasseur', reaction: 1.0, mistake: 0.15, attackAt: 8, levelOffset: 0, smartSpells: true, description: 'Défend correctement et contre-attaque.' },
-  cauchemar: { label: 'Cauchemar', reaction: 0.6, mistake: 0.05, attackAt: 7, levelOffset: 1, smartSpells: true, description: 'Rapide, punit les erreurs.' },
-  abyssal: { label: 'Abyssal', reaction: 0.35, mistake: 0, attackAt: 6.5, levelOffset: 2, smartSpells: true, description: 'Réactions quasi instantanées, cartes renforcées.' },
+  initie: { label: 'Initié', reaction: 1.6, mistake: 0.4, attackAt: 6.5, levelOffset: -1, smartSpells: false, patientDefense: false, description: 'Joue ses cartes au hasard trop souvent, défend mal.' },
+  chasseur: { label: 'Chasseur', reaction: 0.9, mistake: 0.15, attackAt: 8.5, levelOffset: 0, smartSpells: true, patientDefense: true, description: 'Défend correctement et contre-attaque.' },
+  cauchemar: { label: 'Cauchemar', reaction: 0.6, mistake: 0.05, attackAt: 8.5, levelOffset: 1, smartSpells: true, patientDefense: true, description: 'Gère son essence, punit les erreurs.' },
+  abyssal: { label: 'Abyssal', reaction: 0.4, mistake: 0, attackAt: 9, levelOffset: 2, smartSpells: true, patientDefense: true, description: 'Réactions rapides, contres précis, cartes renforcées.' },
 };
 
 interface CardProfile { card: CardDef; air: boolean; splash: boolean; swarm: boolean; tank: boolean; ranged: boolean; dps: number; hp: number; buildingsOnly: boolean }
@@ -84,19 +87,26 @@ export class Bot {
     const hand = this.hand();
     const affordable = hand.filter((h) => h.prof.card.cost <= ess);
     if (!affordable.length) return;
-    if (this.rng.next() < this.diff.mistake * 0.5) return; // hésitation
-
     const enemies = b.entities.filter((e) => e.alive && e.owner === this.foe && e.kind === 'unit' && e.deploy <= 0.5);
-    const threats = enemies.filter((e) => this.depth(e.y) > -4).sort((a, c) => this.depth(c.y) - this.depth(a.y));
+    const threshold = this.diff.patientDefense ? 0.5 : -4;
+    const threats = enemies.filter((e) => this.depth(e.y) > threshold).sort((a, c) => this.depth(c.y) - this.depth(a.y));
+
+    // Erreur : carte au hasard, placée au hasard dans son camp.
+    if (this.rng.next() < this.diff.mistake * 0.35) {
+      const h = this.rng.pick(affordable);
+      if (h.prof.card.kind === 'spell') return;
+      this.play(h.idx, this.rng.range(2, 16), this.Y(this.rng.range(19, 29)));
+      return;
+    }
 
     // 1. Sort opportuniste : achever une tour ou punir un groupe.
     if (this.diff.smartSpells && this.trySpell(affordable, enemies)) return;
 
-    // 2. Défense.
+    // 2. Défense proportionnée à la menace.
     if (threats.length) {
       const threatValue = threats.reduce((s, e) => s + (e.cardId ? getCard(e.cardId).cost / Math.max(1, getCard(e.cardId).spawns?.[0]?.count ?? 1) : 1), 0);
-      if (threatValue >= 1.5 || this.depth(threats[0].y) > 5) {
-        if (this.defend(affordable, threats)) return;
+      if (threatValue >= 2 || this.depth(threats[0].y) > 6) {
+        if (this.defend(affordable, threats, threatValue)) return;
       }
     }
 
@@ -107,6 +117,15 @@ export class Bot {
 
   private trySpell(affordable: { idx: number; prof: CardProfile }[], enemies: Entity[]): boolean {
     const b = this.battle;
+    // Sort de soutien : protéger un groupe allié engagé au combat.
+    for (const s of affordable.filter((h) => h.prof.card.kind === 'spell' && h.prof.card.spell!.affects === 'allies')) {
+      const r = s.prof.card.spell!.radius;
+      const mine = b.entities.filter((e) => e.alive && e.owner === this.me && e.kind === 'unit' && b.time - e.lastHit < 1);
+      for (const c of mine) {
+        const group = mine.filter((e) => Math.hypot(e.x - c.x, e.y - c.y) <= r);
+        if (group.reduce((sum, e) => sum + e.maxHp, 0) > 2500) return this.play(s.idx, c.x, c.y);
+      }
+    }
     const spells = affordable.filter((h) => h.prof.card.kind === 'spell' && h.prof.card.spell!.affects !== 'allies');
     for (const s of spells) {
       const sp = s.prof.card.spell!;
@@ -131,7 +150,7 @@ export class Bot {
     return false;
   }
 
-  private defend(affordable: { idx: number; prof: CardProfile }[], threats: Entity[]): boolean {
+  private defend(affordable: { idx: number; prof: CardProfile }[], threats: Entity[], threatValue: number): boolean {
     const main = threats[0];
     const air = threats.some((t) => t.flying);
     const swarm = threats.filter((t) => t.maxHp < 400).length >= 3;
@@ -148,15 +167,19 @@ export class Bot {
       if (big) s += p.dps > 300 || p.swarm ? 3 : 0;
       if (siege && p.card.kind === 'building') s += 4;
       if (p.buildingsOnly) s -= 10;
-      s -= p.card.cost * 0.6;
-      s += this.rng.range(0, 1.5 + this.diff.mistake * 8);
+      s -= p.card.cost * 0.4 + Math.max(0, p.card.cost - threatValue - 1) * 1.2; // ne pas surpayer la défense
+      s += this.rng.range(0, 1 + this.diff.mistake * 8);
       if (s > bs) { bs = s; best = h; }
     }
     if (!best || bs < -6) return false;
     const p = best.prof;
     // Placement : entre la menace et la tour, en retrait pour les tireurs.
     const lane = main.x < 9 ? BRIDGES[0] : BRIDGES[1];
-    if (p.card.kind === 'building') return this.play(best.idx, 9, this.Y(22));
+    if (p.card.kind === 'building') {
+      // Les pièges se posent sur le chemin de la menace ; les autres bâtiments au centre pour attirer.
+      if (p.card.id === 'piege_machoires') return this.play(best.idx, main.x, main.y + (this.me === 0 ? 2 : -2));
+      return this.play(best.idx, 9, this.Y(22));
+    }
     let x = Math.max(1, Math.min(17, (main.x + lane) / 2));
     let y: number;
     const md = this.depth(main.y);

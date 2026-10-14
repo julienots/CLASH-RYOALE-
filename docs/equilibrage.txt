@@ -1,0 +1,72 @@
+3000 parties en 96.3 s · égalités 0 · victoires au roi 71 · durée moyenne 201 s · couronnes/partie 1.00
+carte                      rareté      coût parties victoire
+titan_ossuaire             legendaire     8     609     66 %  ▲ trop fort ?
+l_innommable               abyssal        8     596     65 %  ▲ trop fort ?
+comete_rouille             legendaire     6    1402     65 %  ▲ trop fort ?
+ecorcheur_nocturne         mythique       4     215     60 %
+vouivre_rouillee           epique         5     192     58 %
+colosse_chair              epique         7     619     58 %
+wyrm_cendres               legendaire     7     626     57 %
+liche_archiviste           mythique       5     195     56 %
+hurleur_profondeurs        epique         5     175     56 %
+reine_ruche                legendaire     6     627     56 %
+berserker_greffe           epique         4     171     56 %
+phalene_spectrale          mythique       2    1325     55 %
+boucher_rouille            rare           4     164     55 %
+goule_jumelle              commun         2    1388     55 %
+lanceuse_epines            rare           4    1319     55 %
+fusilier_rivets            commun         4    1360     54 %
+vierge_mille_yeux          legendaire     5     180     54 %
+chevaucheur_scolopendre    mythique       5     171     54 %
+meute_crocs                commun         3     204     53 %
+sorciere_vase              epique         5     176     53 %
+crabe_siege                rare           4     196     53 %
+nourrice_larves            rare           5     166     53 %
+bouche_sans_fin            legendaire     6     595     53 %
+salve_epines               commun         2    1979     52 %
+abomination_suturee        epique         6     532     52 %
+golem_rivets               rare           5     570     52 %
+arbaletrier_os             commun         3    1345     52 %
+moissonneur_vertebres      epique         5     173     52 %
+cracheur_acide             commun         3    1421     52 %
+harponneur_noye            commun         3     178     52 %
+puits_essence              epique         6     167     51 %
+lance_cranes               rare           5     198     51 %
+tourmenteur_electrique     epique         4    1309     51 %
+bombardier_gonfle          rare           4     192     51 %
+gardien_coquille           epique         5     188     50 %
+tour_dards                 commun         3     199     50 %
+chantre_noye               mythique       4    1341     50 %
+bourreau_chitineux         epique         4     201     49 %
+marais_putride             epique         4    1357     49 %
+belier_ossueux             rare           4     576     49 %
+charognard                 commun         3     198     49 %
+pretresse_sutures          rare           4    1344     48 %
+sauteur_marais             rare           3     184     48 %
+osselets_rampants          commun         1    1344     48 %
+oeil_aile                  rare           3    1289     48 %
+pluie_bile                 commun         3    2937     48 %
+sentinelle_rouillee        commun         3     164     48 %
+fosse_vorace               epique         4    1400     47 %
+devoreur_tombes            mythique       5     576     47 %
+tambour_ossements          epique         4     179     46 %
+rodeur_epines              rare           4     183     46 %
+chimere_suturee            mythique       5     615     46 %
+fouisseuse_chitineuse      rare           3     174     45 %
+nid_larves                 rare           5     172     45 %
+brume_terreur              rare           3    2925     45 %
+meduse_celeste             epique         4    1361     45 %
+sangsue_geante             rare           3     224     45 %
+rampant_bile               commun         2    1341     45 %
+pecheur_ames               mythique       4     193     44 %
+larve_rongeuse             commun         2    1327     44 %
+scarabee_cuirasse          rare           5     574     44 %
+mante_corne                commun         3     186     44 %
+sceau_os                   rare           3    1198     43 %
+sac_spores                 epique         5     585     43 %
+semeur_spores              commun         3     211     42 %
+essaim_mouches             commun         3    1402     42 %
+brasier_ossements          epique         5     143     42 %
+canonnier_vapeur           epique         6     619     42 %
+homoncule_vapeur           commun         3     186     41 %
+piege_machoires            rare           2     169     35 %  ▼ trop faible ?
