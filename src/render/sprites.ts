@@ -14,6 +14,9 @@ export interface Pose {
 }
 
 type Ctx = CanvasRenderingContext2D;
+let LOW_DETAIL = false;
+/** Qualité basse : supprime les halos lumineux coûteux. */
+export function setLowDetail(v: boolean): void { LOW_DETAIL = v; }
 const TAU = Math.PI * 2;
 
 function parseColor(c: string): [number, number, number] {
@@ -65,7 +68,7 @@ function fleshFill(ctx: Ctx, cx: number, cy: number, r: number, base: string): C
 function eye(ctx: Ctx, x: number, y: number, r: number, glow: string, t: number, seed: number): void {
   const blink = Math.sin(t * 1.3 + seed) > 0.97 ? 0.15 : 1;
   ctx.save();
-  ctx.shadowColor = glow; ctx.shadowBlur = r * 3;
+  if (!LOW_DETAIL) { ctx.shadowColor = glow; ctx.shadowBlur = r * 3; }
   ctx.fillStyle = '#120a0a';
   ctx.beginPath(); ctx.ellipse(x, y, r * 1.25, r * 1.25 * blink, 0, 0, TAU); ctx.fill();
   ctx.fillStyle = glow;
