@@ -1,0 +1,31 @@
+{
+  "name": "superessence-abyss-arena",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SUPERESSENCE: ABYSS ARENA — jeu mobile de stratégie en temps réel à cartes, monstres horrifiques originaux.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "balance": "vite-node scripts/balance.ts",
+    "e2e": "node scripts/e2e.mjs",
+    "android:sync": "npm run build && npx cap sync android",
+    "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0",
+    "playwright-core": "^1.48.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vite-node": "^2.1.8",
+    "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "appId": "com.superessence.abyssarena",
+  "appName": "SUPERESSENCE",
+  "webDir": "dist",
+  "android": { "backgroundColor": "#07050a" }
+}
