@@ -5,7 +5,8 @@ import { Rng } from '../core/rng';
 import type { CardDef, PlayerId } from '../core/types';
 import { ARENA_H, ARENA_W, Battle, BRIDGE_HALF, BRIDGES, type BattleEvent, type Entity, RIVER_HALF, RIVER_Y } from '../sim/battle';
 import { FxPool } from './fx';
-import { alpha, drawMonster, setLowDetail, shade } from './sprites';
+import { alpha, setLowDetail, shade } from './sprites';
+import { clearSpriteCache, drawCachedMonster } from './spriteCache';
 
 export interface ViewOptions { quality: 'basse' | 'moyenne' | 'haute'; damageNumbers: boolean; showGrid: boolean; ground: string; accent: string; summonFx: string }
 
@@ -48,6 +49,7 @@ export class BattleView {
     this.ox = (w - this.tile * ARENA_W) / 2;
     this.oy = (h - this.tile * ARENA_H) / 2 + this.tile * 0.6;
     this.ground = null;
+    clearSpriteCache();
   }
 
   /** Convertit des coordonnées écran (CSS) en coordonnées d'arène. */
@@ -279,20 +281,17 @@ export class BattleView {
     const attack = sinceAtk < atkDur ? sinceAtk / atkDur : 0;
     const moving = e.speed > 0 && e.deploy <= 0 && sinceAtk > e.hitSpeed + 0.1 && this.battle.time >= e.stunUntil;
     const flip = Math.cos(e.facing) < -0.1;
-    g.save();
-    g.translate(x, y);
+    let dy = 0, a = 1;
     if (e.deploy > 0) {
       const k = Math.max(0, Math.min(1, 1 - e.deploy));
-      g.globalAlpha = 0.35 + 0.65 * k;
-      g.translate(0, (1 - k) * T * 0.3);
+      a = 0.35 + 0.65 * k;
+      dy = (1 - k) * T * 0.3;
     }
-    if (enemyHidden) g.globalAlpha = 0.07 + 0.05 * Math.sin(this.time * 6);
-    else if (e.hidden) g.globalAlpha *= 0.45;
+    if (enemyHidden) a = 0.07 + 0.05 * Math.sin(this.time * 6);
+    else if (e.hidden) a *= 0.45;
     const flash = this.battle.time - e.lastHit < 0.09 && this.opts.quality !== 'basse';
-    if (flash) g.filter = 'brightness(2.2) saturate(0.4)';
-    drawMonster(g, e.def.visual, { t: e.age + e.id * 0.37, moving, attack }, T * UNIT_PX, flip);
-    g.filter = 'none';
-    g.restore();
+    g.globalAlpha = a;
+    drawCachedMonster(g, e.def.visual, x, y + dy, T * UNIT_PX, e.age + e.id * 0.37, moving, attack, flip, flash ? 'flash' : 'normal');
     g.globalAlpha = 1;
     // statuts
     if (this.battle.time < e.stunUntil) {
@@ -489,12 +488,10 @@ export class BattleView {
       d.t += dt;
       const u = getUnit(d.unitId);
       g.save();
-      g.translate(this.sx(d.x), this.sy(d.y) + (d.flying ? d.t * T * 3 : 0));
       g.globalAlpha = Math.max(0, 0.8 - d.t * 1.6);
+      g.translate(this.sx(d.x), this.sy(d.y) + (d.flying ? d.t * T * 3 : 0));
       g.scale(1 + d.t * 0.3, Math.max(0.1, 1 - d.t * 1.4));
-      g.filter = this.opts.quality === 'basse' ? 'none' : 'grayscale(0.6) brightness(0.6)';
-      drawMonster(g, u.visual, { t: 0, moving: false, attack: 0 }, T * UNIT_PX);
-      g.filter = 'none';
+      drawCachedMonster(g, u.visual, 0, 0, T * UNIT_PX, 0, false, 0, false, 'ghost');
       g.restore();
     }
     this.deathGhosts = this.deathGhosts.filter((d) => d.t < 0.55);
@@ -527,9 +524,9 @@ export class BattleView {
     }
     for (const s of p.card.spawns ?? []) {
       const u = getUnit(s.unit);
-      g.save(); g.globalAlpha = 0.55; g.translate(x, y);
-      drawMonster(g, u.visual, { t: this.time, moving: false, attack: 0 }, T * UNIT_PX);
-      g.restore();
+      g.globalAlpha = 0.55;
+      drawCachedMonster(g, u.visual, x, y, T * UNIT_PX, this.time, false, 0, false);
+      g.globalAlpha = 1;
       // portée d'attaque
       if (u.range >= 2) {
         g.strokeStyle = alpha(col, 0.35); g.lineWidth = 1.5; g.setLineDash([4, 4]);

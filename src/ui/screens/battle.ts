@@ -50,8 +50,16 @@ registerScreen('battle', (app, root, params) => {
   const myCrowns = h('div', { class: 'crowns' });
   const foeCrowns = h('div', { class: 'crowns' });
   const pauseBtn = h('button', { class: 'pause-btn', 'aria-label': 'Pause' }, '❚❚');
+  const emote = COSMETIC_MAP[g.data.cosmetics.emote];
+  let emoteCd = 0;
+  const emoteBtn = h('button', { class: 'pause-btn', 'aria-label': 'Émote', onclick: () => {
+    if (emoteCd > performance.now()) return;
+    emoteCd = performance.now() + 4000;
+    const k = view.tile;
+    view.fx.spawn({ kind: 'text', x: view.sx(9), y: view.sy(27.5), vy: -k * 0.4, max: 2.2, size: k * 0.9, text: `« ${emote.name} »`, color: emote.colors[0] });
+  } }, '💬');
   const top = h('div', { class: 'battle-top' },
-    pauseBtn,
+    pauseBtn, emoteBtn,
     h('div', { class: 'col', style: 'gap:0;flex:1' }, h('b', { class: 'small', style: 'color:#ff8a94' }, setup.botName), h('span', { class: 'small muted' }, `${DIFFICULTIES[setup.difficulty].label}${ev ? ' · ' + ev.name : mode === 'entrainement' ? ' · entraînement' : ''}`)),
     foeCrowns, timer, myCrowns,
   );
@@ -68,7 +76,6 @@ registerScreen('battle', (app, root, params) => {
     quality: settings.quality, damageNumbers: settings.damageNumbers, showGrid: settings.showGrid,
     ground: arena.ground, accent: arena.accent, summonFx: g.data.cosmetics.summonFx,
   });
-  void COSMETIC_MAP;
   const onResize = () => view.resize();
   window.addEventListener('resize', onResize);
 

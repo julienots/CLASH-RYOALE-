@@ -61,7 +61,23 @@ function trainingModal(app: App): void {
   ));
 }
 
+function tutorial(app: App): void {
+  const close = modal(h('div', { class: 'col' },
+    h('h2', { style: 'color:var(--crystal)' }, 'Bienvenue, Éveilleur'),
+    h('p', null, 'Détruisez les tours adverses avant que l’ennemi ne détruise les vôtres.'),
+    h('ul', { class: 'small', style: 'padding-left:18px;margin:0' },
+      h('li', null, 'Glissez une carte de votre main vers votre moitié d’arène pour invoquer le monstre (ou touchez la carte, puis l’arène).'),
+      h('li', null, 'Chaque carte coûte de l’essence ; la barre violette se recharge seule et double durant la dernière minute.'),
+      h('li', null, 'Les unités avancent, choisissent leurs cibles et combattent seules. Les zones rouges sont interdites au déploiement.'),
+      h('li', null, 'Une tour détruite = 1 couronne. Le Cœur-Roi détruit = victoire immédiate (3 couronnes).'),
+      h('li', null, 'À égalité après 3 minutes : mort subite, puis départage par la tour la plus abîmée.')),
+    h('p', { class: 'small muted' }, 'Gagnez des coffres, améliorez vos cartes, complétez le SUPER PASS. Tout est hors ligne, sans achat réel.'),
+    h('button', { class: 'btn primary block', onclick: () => { app.game.transact((s) => { s.tutorialDone = true; return { ok: true }; }); close(); } }, 'Compris !'),
+  ), { dismissable: false });
+}
+
 registerScreen('home', (app, root) => {
+  if (!app.game.data.tutorialDone) setTimeout(() => tutorial(app), 300);
   const slotsBox = h('div');
   const refreshSlots = () => { slotsBox.replaceChildren(chestSlotsView(app, refreshSlots)); app.refreshTop(); };
   const render = () => {

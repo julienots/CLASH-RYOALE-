@@ -1,9 +1,10 @@
 // Test de bout en bout dans Chromium (viewport mobile) : navigation, combat réel, glisser-déposer, captures.
 import { chromium } from 'playwright-core';
-import { readdirSync } from 'node:fs';
+import { mkdirSync, readdirSync } from 'node:fs';
 
 const base = process.argv[2] ?? 'http://localhost:5173/';
 const out = process.argv[3] ?? 'e2e-shots';
+mkdirSync(out, { recursive: true });
 const hsDir = '/opt/pw-browsers/' + (readdirSync('/opt/pw-browsers').find((d) => d.startsWith('chromium_headless_shell')) ?? '');
 const exe = process.env.CHROME_PATH ?? `${hsDir}/${readdirSync(hsDir).find((d) => d.startsWith('chrome'))}/headless_shell`;
 const browser = await chromium.launch({ executablePath: exe, args: ['--no-sandbox'] });
@@ -16,6 +17,7 @@ const step = async (label, fn) => { try { await fn(); console.log('✔', label);
 
 await page.goto(base, { waitUntil: 'networkidle' });
 await page.waitForTimeout(800);
+await step('aide de premier lancement', async () => { await shot('00-tutoriel'); await page.click('button:has-text("Compris")'); await page.waitForTimeout(200); });
 await shot('01-accueil');
 for (const [label, nav] of [['Cartes', '02-collection'], ['Boutique', '03-boutique'], ['Super Pass', '04-pass'], ['Missions', '05-missions']]) {
   await step(`écran ${label}`, async () => { await page.click(`.nav button:has-text("${label}")`); await page.waitForTimeout(500); await shot(nav); });
@@ -61,6 +63,17 @@ await step('combat', async () => {
   if (after !== deployed + 1) throw new Error('le déploiement au toucher a échoué');
   await page.waitForTimeout(6000);
   await shot('14-combat-mêlée');
+  // Charge : 30 unités par camp, mesure de la fluidité (rendu logiciel headless = pire cas)
+  const fps = await page.evaluate(async () => {
+    const b = window.__battle;
+    const ids = ['charognard', 'larve', 'oeil_aile', 'mouche_os', 'crabe_siege', 'arbaletrier_os'];
+    for (let i = 0; i < 30; i++) { b.spawnUnit(0, ids[i % 6], 2 + (i % 14), 20 + (i % 5), 9, null, 0); b.spawnUnit(1, ids[(i + 3) % 6], 2 + (i % 14), 12 - (i % 5), 9, null, 0); }
+    let frames = 0; const t0 = performance.now();
+    await new Promise((r) => { const f = () => { frames++; if (performance.now() - t0 < 3000) requestAnimationFrame(f); else r(); }; requestAnimationFrame(f); });
+    return frames / ((performance.now() - t0) / 1000);
+  });
+  console.log(`   images/s avec ~60 unités (Chromium headless, rendu logiciel) : ${fps.toFixed(1)}`);
+  await shot('14b-combat-charge');
 });
 await step('pause et abandon', async () => {
   await page.click('.pause-btn'); await page.waitForTimeout(300); await shot('15-pause');
