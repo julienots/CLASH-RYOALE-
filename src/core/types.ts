@@ -25,6 +25,8 @@ export interface Visual {
   tentacles: number;
   horns: number;
   seed: number;
+  /** Variante de silhouette (châssis / arme) pour certains plans. */
+  variant?: number;
 }
 
 export type Ability =

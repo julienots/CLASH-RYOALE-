@@ -70,7 +70,7 @@ unit('abomination_suturee', 'Abomination Suturée', { hp: 3200, damage: 260, hit
   abilities: [{ type: 'deathSpawn', unit: 'larve', count: 4 }],
   visual: vis('hulk', 1.55, 'chair', { c1: '#a3474a', eyes: 3, limbs: 3, tentacles: 3 }) });
 unit('sentinelle_rouillee', 'Sentinelle Rouillée', { hp: 1250, damage: 130, hitSpeed: 1.2, range: 0.7, speed: 1.0, targets: 'ground', radius: 0.5, mass: 6,
-  visual: vis('mech', 1.0, 'rouille', { eyes: 1, horns: 2 }) });
+  visual: vis('mech', 1.0, 'rouille', { eyes: 1, horns: 2, variant: 4 }) });
 unit('hurleur_profondeurs', 'Hurleur des Profondeurs', { hp: 1900, damage: 160, hitSpeed: 1.4, range: 0.7, speed: 1.0, targets: 'ground', radius: 0.6, mass: 9,
   abilities: [{ type: 'aura', effect: 'fear', value: 0.35, radius: 2.5 }],
   visual: vis('brute', 1.25, 'abysse', { eyes: 6, tentacles: 4, horns: 0 }) });
@@ -82,7 +82,7 @@ unit('bourreau_chitineux', 'Bourreau Chitineux', { hp: 1100, damage: 260, hitSpe
   visual: vis('mantis', 1.15, 'chitine', { c1: '#2e3814', c3: '#ff3d6e', limbs: 6, eyes: 4 }) });
 unit('golem_rivets', 'Golem à Rivets', { hp: 3000, damage: 160, hitSpeed: 1.5, range: 0.8, speed: 0.75, targets: 'buildings', sight: 7, radius: 0.85, mass: 18,
   abilities: [{ type: 'deathBlast', damage: 300, radius: 2 }],
-  visual: vis('mech', 1.55, 'rouille', { eyes: 2, spikes: 4, horns: 0 }) });
+  visual: vis('mech', 1.55, 'rouille', { eyes: 2, spikes: 4, horns: 0, variant: 12 }) });
 unit('rampant_bile', 'Rampant de Bile', { hp: 300, damage: 0, hitSpeed: 0.5, range: 0.4, speed: 1.67, targets: 'ground', radius: 0.35, mass: 2,
   abilities: [{ type: 'kamikaze' }, { type: 'deathBlast', damage: 360, radius: 1.8 }],
   visual: vis('blob', 0.75, 'chair', { c1: '#7c8a1d', c3: '#e6ff3d', eyes: 2, spikes: 0 }) });
@@ -107,7 +107,7 @@ unit('moissonneur_vertebres', 'Moissonneur de Vertèbres', { hp: 1600, damage: 2
   visual: vis('skeletal', 1.25, 'ossuaire', { c3: '#ff9f3d', eyes: 2, limbs: 2, spikes: 10 }) });
 unit('homoncule_vapeur', 'Homoncule à Vapeur', { hp: 260, damage: 70, hitSpeed: 1.0, range: 0.6, speed: 1.0, targets: 'ground', radius: 0.38, mass: 3,
   abilities: [{ type: 'deathBlast', damage: 60, radius: 1 }],
-  visual: vis('mech', 0.7, 'rouille', { c3: '#9fe0ff', eyes: 1 }) });
+  visual: vis('mech', 0.7, 'rouille', { c3: '#9fe0ff', eyes: 1, variant: 14 }) });
 unit('chimere_suturee', 'Chimère Suturée', { hp: 2000, damage: 170, hitSpeed: 1.2, range: 0.8, speed: 1.0, targets: 'ground', radius: 0.65, mass: 10,
   abilities: [{ type: 'chain', jumps: 2, radius: 2 }],
   visual: vis('quadruped', 1.3, 'chair', { c2: '#d6c3a5', eyes: 6, horns: 3, limbs: 4, tentacles: 2 }) });
@@ -136,9 +136,9 @@ unit('sorciere_vase', 'Sorcière de Vase', { hp: 800, damage: 120, hitSpeed: 1.4
   visual: vis('priest', 1.05, 'abysse', { eyes: 3, tentacles: 4 }) });
 unit('tourmenteur_electrique', 'Tourmenteur Électrique', { hp: 700, damage: 120, hitSpeed: 1.5, range: 5, speed: 1.0, targets: 'both', projectile: 30,
   abilities: [{ type: 'chain', jumps: 3, radius: 3 }],
-  visual: vis('mech', 1.0, 'rouille', { c3: '#7fd8ff', eyes: 3, horns: 2, spikes: 2 }) });
+  visual: vis('mech', 1.0, 'rouille', { c3: '#7fd8ff', eyes: 3, horns: 2, spikes: 2, variant: 10 }) });
 unit('fusilier_rivets', 'Fusilier à Rivets', { hp: 600, damage: 150, hitSpeed: 1.1, range: 6.5, speed: 1.0, targets: 'both', projectile: 18,
-  visual: vis('mech', 0.95, 'rouille', { eyes: 1, horns: 0 }) });
+  visual: vis('mech', 0.95, 'rouille', { eyes: 1, horns: 0, variant: 8 }) });
 unit('lance_cranes', 'Lance-Crânes', { hp: 900, damage: 160, hitSpeed: 1.7, range: 5, speed: 1.0, targets: 'ground', projectile: 7, splash: 1.4, radius: 0.5, mass: 6,
   abilities: [{ type: 'deathSpawn', unit: 'osselet', count: 2 }],
   visual: vis('skeletal', 1.1, 'ossuaire', { c3: '#7affb2', eyes: 2, spikes: 4 }) });
