@@ -27,7 +27,7 @@ ou utilisez le mode appareil mobile des outils de développement.
 ## Tests
 
 ```bash
-npm test             # 218 tests unitaires et d'intégration (Vitest)
+npm test             # 222 tests unitaires et d'intégration (Vitest)
 npm run e2e -- http://localhost:5173/ dossier-captures   # test de bout en bout dans Chromium (serveur dev lancé)
 npm run balance -- 3000                                  # simulation d'équilibrage bot contre bot
 npx vite-node scripts/catalog.ts                         # régénère docs/CARTES.md
