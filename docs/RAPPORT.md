@@ -11,7 +11,7 @@ Rapport honnête : ce qui est fait et vérifié, ce qui est partiel et ce qui re
 | `npm run e2e` (Chromium, viewport 390×844, tactile) | Tous les écrans visités, offrande ouverte, combat réel (6 cartes glissées-déposées + 1 posée au toucher), pause, abandon, résultats, rechargement : progression conservée. **0 erreur JavaScript.** |
 | Fluidité (Chromium headless, rendu logiciel, ~60 unités en mêlée) | ~43–49 images/s avec le rendu réaliste (pré-calcul ~2 s au lancement du combat) ; ~58 images/s en qualité basse |
 | `npm run balance -- 3000` | 3 000 parties bot contre bot en ~95 s ; résultats dans `docs/equilibrage.txt` |
-| Compilation APK Android | **Non réalisée** (voir « Restant ») |
+| Compilation APK Android | **Réussie** : `build/superessence-debug.apk` (≈ 197 Ko), manifeste vérifié (`aapt dump badging`), signatures v1/v2/v3 valides (`apksigner verify`), alignement vérifié (`zipalign -c`). Build web du fichier unique testé depuis `file://` (démarrage + persistance OK). **Non testé sur un appareil ou un émulateur réel.** |
 
 ### Ce que couvrent les tests automatiques
 - **Les 70 cartes** : données complètes, identifiants uniques, répartition 30/12/8/8/7/5, références valides
@@ -104,10 +104,9 @@ Rapport honnête : ce qui est fait et vérifié, ce qui est partiel et ce qui re
 
 ## Restant / non implémenté
 
-- **APK Android** : le projet Capacitor (`android/`) est généré, mais la compilation a échoué dans
-  l'environnement de développement car `dl.google.com` (plugin Gradle Android, SDK) renvoyait 403.
-  **Aucun APK n'est fourni.** Commande à lancer sur une machine avec le SDK : `npm run android:apk`.
-  Tests tactiles sur appareil réel : à faire.
+- **Test sur appareil réel** : l'APK n'a pu être lancé ni sur téléphone ni sur émulateur dans
+  l'environnement de développement (pas d'émulateur disponible). Fluidité, tactile et son sur Android
+  restent à vérifier en conditions réelles. L'APK est signé avec une clé de debug (pas de publication Play Store).
 - **Multijoueur en ligne, comptes, achats réels** : non implémentés (exigences dans
   `docs/BACKEND_ET_PAIEMENTS.md`). Aucun écran ne simule un mode en ligne.
 - **Skins de cartes**, émotes animées, classements, clans, replays : non implémentés.

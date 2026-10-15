@@ -7,3 +7,5 @@ android/build/
 android/.gradle/
 android/local.properties
 e2e-shots/
+build/
+dist-android/

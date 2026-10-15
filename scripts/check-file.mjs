@@ -1,0 +1,20 @@
+// Vérifie que le build Android (fichier unique) démarre depuis file:// sans erreur et que la sauvegarde persiste.
+import { chromium } from 'playwright-core';
+import { readdirSync } from 'node:fs';
+import { resolve } from 'node:path';
+const hsDir = '/opt/pw-browsers/' + readdirSync('/opt/pw-browsers').find((d) => d.startsWith('chromium_headless_shell'));
+const exe = process.env.CHROME_PATH ?? `${hsDir}/${readdirSync(hsDir).find((d) => d.startsWith('chrome'))}/headless_shell`;
+const b = await chromium.launch({ executablePath: exe, args: ['--no-sandbox', '--allow-file-access-from-files'] });
+const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+const p = await ctx.newPage();
+const errs = [];
+p.on('pageerror', (e) => errs.push(String(e)));
+const url = 'file://' + resolve(process.argv[2] ?? 'dist-android/index.html');
+await p.goto(url); await p.waitForTimeout(1500);
+const ok = await p.evaluate(() => !!window.__game && document.querySelector('.fight') !== null);
+await p.evaluate(() => { window.__game.transact((s) => { s.gold = 777; return { ok: true }; }); });
+await p.reload(); await p.waitForTimeout(1000);
+const gold = await p.evaluate(() => window.__game.data.gold);
+console.log(`démarrage=${ok} sauvegarde=${gold === 777} erreurs=${errs.length}`, errs.join('\n'));
+await b.close();
+process.exit(ok && gold === 777 && !errs.length ? 0 : 1);

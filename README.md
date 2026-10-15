@@ -40,19 +40,24 @@ survit au rechargement. Il nécessite `playwright-core` (déjà en dépendance) 
 
 ## Compiler l'APK Android
 
-Le projet Android Capacitor est dans `android/` (orientation portrait, identifiant `com.superessence.abyssarena`).
+**Méthode principale (utilisée pour l'APK fourni)** — sans Gradle ni SDK Google, avec les outils Android
+empaquetés par Debian/Ubuntu :
 
 ```bash
-# Prérequis : JDK 17+ et SDK Android (ANDROID_HOME), par exemple via Android Studio.
-npm run android:apk
-# APK debug : android/app/build/outputs/apk/debug/app-debug.apk
+sudo apt-get install aapt apksigner zipalign dalvik-exchange android-sdk-platform-23 python3-pil
+npm run apk          # → build/superessence-debug.apk
 ```
 
-Ou bien `npm run android:sync` puis ouvrir `android/` dans Android Studio.
+L'application native (`android-native/`) est une activité Java minimale : un WebView plein écran
+(mode immersif, portrait, écran maintenu allumé) qui charge le jeu depuis `assets/index.html`.
+Le jeu y est intégré en **un seul fichier** (`vite.android.config.ts`) : il fonctionne entièrement hors
+ligne, la sauvegarde utilise le stockage local du WebView, et le bouton « retour » d'Android met le
+combat en pause ou revient à l'écran précédent. `npm run check:file` vérifie ce build depuis `file://`.
+L'APK est signé avec une clé **de debug** (`android-native/debug.keystore`, mot de passe `android`) :
+il s'installe directement mais ne convient pas à une publication sur le Play Store.
 
-> **État actuel** : l'APK n'a **pas** pu être compilé dans l'environnement de développement utilisé,
-> car l'accès à `dl.google.com` (SDK Android et plugin Gradle Android) y était bloqué (erreur 403).
-> Le build web et tous les tests passent ; la compilation Android reste à faire sur une machine avec le SDK.
+**Méthode alternative (Capacitor + Gradle)** — le projet `android/` reste disponible pour Android Studio :
+`npm run android:apk` (nécessite le SDK Android officiel et l'accès à `dl.google.com`).
 
 ## Architecture
 

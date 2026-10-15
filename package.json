@@ -14,7 +14,9 @@
     "balance": "vite-node scripts/balance.ts",
     "e2e": "node scripts/e2e.mjs",
     "android:sync": "npm run build && npx cap sync android",
-    "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug"
+    "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug",
+    "apk": "bash scripts/build-apk.sh",
+    "check:file": "node scripts/check-file.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.2.0",
@@ -22,6 +24,7 @@
     "typescript": "^5.6.3",
     "vite": "^5.4.11",
     "vite-node": "^2.1.8",
+    "vite-plugin-singlefile": "^2.0.3",
     "vitest": "^2.1.8"
   },
   "dependencies": {

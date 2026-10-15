@@ -33,6 +33,15 @@ try {
   const app = new App(game, mount);
   app.go('home');
   document.addEventListener('visibilitychange', () => { if (document.hidden) { game.persist(); audio.suspend(); } else audio.resume(); });
+  // Bouton « retour » Android (appelé par l'application native) : true = géré par le jeu.
+  (window as unknown as { __onBack: () => boolean }).__onBack = () => {
+    const modalBg = document.querySelector<HTMLElement>('.modal-bg');
+    if (app.current === 'battle') { document.querySelector<HTMLButtonElement>('.pause-btn')?.click(); return true; }
+    if (modalBg) { modalBg.click(); return true; }
+    if (app.current === 'home') return false;
+    app.back();
+    return true;
+  };
   (window as unknown as { __game: Game; __app: App }).__game = game;
   (window as unknown as { __game: Game; __app: App }).__app = app;
 } catch (e) {
