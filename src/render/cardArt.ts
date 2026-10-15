@@ -5,7 +5,7 @@ import { Rng } from '../core/rng';
 import type { CardDef } from '../core/types';
 import { alpha, isFlyingPlan, shade } from './sprites';
 import { buildCreature } from './anatomy';
-import { renderSculpt } from './sculpt';
+import { mix, renderSculpt, Sculpt, type V3 } from './sculpt';
 
 const cache = new Map<string, string>();
 
@@ -93,12 +93,6 @@ function spellArt(ctx: CanvasRenderingContext2D, card: CardDef, w: number, h: nu
       ctx.fillStyle = '#2b3a0a'; ctx.beginPath(); ctx.ellipse(cx, h * 0.12, w * 0.55, h * 0.12, 0, 0, Math.PI * 2); ctx.fill();
       break;
     case 'salve_epines':
-      for (let i = 0; i < 26; i++) {
-        const x = rng.range(0.1, 0.9) * w, y = rng.range(0.1, 0.8) * h, a = Math.PI / 2 + rng.range(-0.3, 0.3);
-        ctx.fillStyle = shade(pal.c2, rng.range(-0.2, 0.2));
-        ctx.save(); ctx.translate(x, y); ctx.rotate(a);
-        ctx.beginPath(); ctx.moveTo(-w * 0.012, -h * 0.07); ctx.lineTo(w * 0.012, -h * 0.07); ctx.lineTo(0, h * 0.05); ctx.fill(); ctx.restore();
-      }
       break;
     case 'brume_terreur': {
       for (let i = 0; i < 30; i++) {
@@ -107,13 +101,6 @@ function spellArt(ctx: CanvasRenderingContext2D, card: CardDef, w: number, h: nu
         g.addColorStop(0, alpha('#9fe8ff', 0.18)); g.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = g; ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
       }
-      // visage hurlant dans la brume
-      ctx.fillStyle = alpha('#d8f6ff', 0.55);
-      ctx.beginPath(); ctx.ellipse(cx, cy - h * 0.08, w * 0.2, h * 0.25, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#04080c';
-      ctx.beginPath(); ctx.ellipse(cx - w * 0.08, cy - h * 0.14, w * 0.045, h * 0.06, 0.2, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(cx + w * 0.08, cy - h * 0.14, w * 0.045, h * 0.06, -0.2, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(cx, cy + h * 0.04, w * 0.06, h * 0.11, 0, 0, Math.PI * 2); ctx.fill();
       break;
     }
     case 'marais_putride':
@@ -128,27 +115,10 @@ function spellArt(ctx: CanvasRenderingContext2D, card: CardDef, w: number, h: nu
         g.addColorStop(0, alpha('#a6d93a', 0.4)); g.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = g; ctx.fillRect(x - w * 0.05, h * 0.2, w * 0.1, h * 0.55);
       }
-      // main noyée
-      ctx.fillStyle = '#b8a888'; ctx.beginPath(); ctx.moveTo(cx - w * 0.05, h * 0.72); ctx.lineTo(cx - w * 0.06, h * 0.5); ctx.lineTo(cx + w * 0.04, h * 0.48); ctx.lineTo(cx + w * 0.05, h * 0.72); ctx.fill();
-      for (let k = 0; k < 4; k++) { ctx.fillRect(cx - w * 0.06 + k * w * 0.028, h * (0.38 + (k % 2) * 0.02), w * 0.018, h * 0.1); }
       break;
     case 'sceau_os':
-      ctx.strokeStyle = '#efe6cf'; ctx.lineWidth = w * 0.025;
-      ctx.beginPath(); ctx.arc(cx, cy, w * 0.28, 0, Math.PI * 2); ctx.stroke();
-      for (let i = 0; i < 6; i++) {
-        const a = (i / 6) * Math.PI * 2;
-        ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * w * 0.28, cy + Math.sin(a) * w * 0.28); ctx.lineTo(cx + Math.cos(a + Math.PI * 0.66) * w * 0.28, cy + Math.sin(a + Math.PI * 0.66) * w * 0.28); ctx.stroke();
-      }
-      ctx.save(); ctx.shadowColor = pal.c3; ctx.shadowBlur = w * 0.15; ctx.fillStyle = alpha(pal.c3, 0.8);
-      ctx.beginPath(); ctx.arc(cx, cy, w * 0.08, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       break;
     case 'fosse_vorace':
-      for (let r = 10; r > 0; r--) {
-        ctx.fillStyle = r % 2 ? shade(pal.c2, -0.3 - r * 0.04) : shade(pal.c1, -0.2 - r * 0.05);
-        ctx.beginPath(); ctx.ellipse(cx + Math.sin(r) * w * 0.01, cy, w * 0.045 * r, h * 0.025 * r, r * 0.3, 0, Math.PI * 2); ctx.fill();
-      }
-      ctx.fillStyle = '#efe6cf';
-      for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * w * 0.42, cy + Math.sin(a) * h * 0.24); ctx.lineTo(cx + Math.cos(a + 0.1) * w * 0.32, cy + Math.sin(a + 0.1) * h * 0.18); ctx.lineTo(cx + Math.cos(a + 0.2) * w * 0.42, cy + Math.sin(a + 0.2) * h * 0.24); ctx.fill(); }
       break;
     case 'comete_rouille': {
       const g = ctx.createLinearGradient(w, 0, cx, cy);
@@ -200,7 +170,7 @@ export function renderCardArt(card: CardDef, w: number, h: number, t = 0.4): HTM
       }
     } else ctx.drawImage(layer, 0, 0);
     ctx.restore();
-  } else spellArt(ctx, card, w, h, rng);
+  } else { spellArt(ctx, card, w, h, rng); spellSculpt(ctx, card, w, h); }
   vignette(ctx, w, h, rng);
   return c;
 }
@@ -237,4 +207,88 @@ function pump(): void {
     j.res.forEach((r) => r(url));
   }
   if (queue.length) setTimeout(pump, 0); else pumping = false;
+}
+
+/** Objets sculptés des sorts, composés par-dessus l'ambiance 2D. */
+function spellSculpt(ctx: CanvasRenderingContext2D, card: CardDef, w: number, h: number): void {
+  const sc = new Sculpt();
+  const S = w * 0.42;
+  let ox = w / 2, oy = h * 0.82;
+  switch (card.id) {
+    case 'comete_rouille': {
+      sc.ell([0, 0.9, 0], [0.42, 0.4, 0.4], '#7a4422', 'rust', { col2: '#2a1810' });
+      for (let i = 0; i < 6; i++) { const a = i * 1.1; sc.ell([Math.cos(a) * 0.32, 0.9 + Math.sin(a) * 0.3, 0.2], [0.14, 0.12, 0.12], mix('#8a4b22', '#3b3b3f', (i % 3) / 3), 'rust'); }
+      sc.ell([-0.15, 0.75, 0.3], [0.12, 0.1, 0.1], '#ffb347', 'glow');
+      sc.ell([0.18, 1.05, 0.28], [0.08, 0.06, 0.06], '#ffd27a', 'glow');
+      break;
+    }
+    case 'sceau_os': {
+      sc.pitch = 0.9;
+      for (let i = 0; i < 16; i++) {
+        const a0 = (i / 16) * Math.PI * 2, a1 = ((i + 1) / 16) * Math.PI * 2;
+        sc.cap([Math.cos(a0) * 0.7, 0.1, Math.sin(a0) * 0.7], [Math.cos(a1) * 0.7, 0.1, Math.sin(a1) * 0.7], 0.07, 0.07, '#ddd2b8', 'bone');
+      }
+      for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; sc.spike([Math.cos(a) * 0.7, 0.12, Math.sin(a) * 0.7], [Math.cos(a), 0.6, Math.sin(a)], 0.28, 0.06, '#e8dcc2', 'bone'); }
+      sc.ell([0, 0.25, 0], [0.2, 0.2, 0.2], '#c6a6ff', 'glow');
+      oy = h * 0.66;
+      break;
+    }
+    case 'fosse_vorace': {
+      sc.pitch = 1.0;
+      for (let i = 0; i < 20; i++) {
+        const a = (i / 20) * Math.PI * 2;
+        sc.ell([Math.cos(a) * 0.75, 0.05, Math.sin(a) * 0.75], [0.16, 0.08, 0.16], '#3a2a30', 'flesh');
+        sc.spike([Math.cos(a) * 0.68, 0.1, Math.sin(a) * 0.68], [-Math.cos(a), 0.5, -Math.sin(a)], 0.25, 0.05, '#efe3c8', 'tooth');
+      }
+      sc.ell([0, -0.05, 0], [0.62, 0.02, 0.62], '#050304', 'dark');
+      oy = h * 0.6;
+      break;
+    }
+    case 'marais_putride': {
+      // main décharnée émergeant du marais
+      const base: V3 = [0, 0.05, 0];
+      sc.cap(base, [0.02, 0.6, 0], 0.09, 0.07, '#9a8a70', 'bone');
+      sc.ell([0.03, 0.72, 0], [0.12, 0.13, 0.06], '#a89878', 'bone');
+      for (let k = 0; k < 4; k++) sc.chain([[-0.08 + k * 0.055, 0.82, 0], [-0.1 + k * 0.06, 1.0 + (k % 2) * 0.05, 0.02], [-0.12 + k * 0.065, 1.12 + (k % 2) * 0.06, 0.06]], [0.025, 0.02, 0.012], '#b0a080', 'bone');
+      sc.chain([[0.1, 0.72, 0], [0.2, 0.82, 0.04], [0.25, 0.92, 0.08]], [0.025, 0.02, 0.012], '#b0a080', 'bone');
+      oy = h * 0.8;
+      break;
+    }
+    case 'brume_terreur': {
+      sc.yaw = 1.5; sc.pitch = 0.2;
+      sc.ell([0, 1.0, 0], [0.3, 0.46, 0.34], '#b8d0dc', 'bone');
+      sc.ell([0.04, 0.5, 0], [0.2, 0.3, 0.24], '#a8c4d0', 'bone');
+      for (const s2 of [-1, 1]) {
+        sc.ell([0.27, 1.05, s2 * 0.14], [0.05, 0.16, 0.1], '#020406', 'dark', { hard: true, rot: s2 * 0.25 });
+        sc.ell([0.22, 0.75, s2 * 0.2], [0.05, 0.1, 0.06], '#7890a0', 'bone');
+      }
+      sc.ell([0.24, 0.45, 0], [0.05, 0.3, 0.12], '#020406', 'dark', { hard: true });
+      for (let k = 0; k < 5; k++) sc.spike([0.27, 0.72, -0.08 + k * 0.04], [0.1, -1, 0], 0.08, 0.015, '#d8d0c0', 'tooth');
+      oy = h * 0.85;
+      break;
+    }
+    case 'salve_epines': {
+      for (let i = 0; i < 9; i++) sc.spike([-0.6 + (i % 3) * 0.6 + (i * 0.13) % 0.2, 1.6 - Math.floor(i / 3) * 0.45, (i % 2) * 0.2], [0.15, -1, 0], 0.45, 0.06, '#c9b26a', 'chitin');
+      oy = h * 0.95;
+      break;
+    }
+    case 'pluie_bile': {
+      for (let i = 0; i < 12; i++) sc.ell([-0.7 + (i * 0.37) % 1.4, 0.4 + ((i * 0.53) % 1.2), (i % 3) * 0.1], [0.05, 0.09, 0.05], '#b5ff3a', 'abyss');
+      sc.ell([0, 0.04, 0], [0.75, 0.04, 0.35], '#7aa020', 'abyss');
+      oy = h * 0.9;
+      break;
+    }
+    default: return;
+  }
+  const img = renderSculpt(sc, w, h, S, ox, oy, card.cost * 97, 1.3);
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = w * 0.03;
+  ctx.drawImage(img, 0, 0);
+  ctx.restore();
+  if (card.id === 'brume_terreur') {
+    // le visage se dissout dans la brume
+    const fg = ctx.createLinearGradient(0, h * 0.45, 0, h * 0.95);
+    fg.addColorStop(0, 'rgba(150,190,210,0)'); fg.addColorStop(1, 'rgba(120,160,180,0.85)');
+    ctx.fillStyle = fg; ctx.fillRect(0, h * 0.45, w, h * 0.55);
+  }
 }

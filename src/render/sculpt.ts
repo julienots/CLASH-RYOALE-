@@ -27,7 +27,7 @@ const MAT: Record<Mat, { spec: number; shin: number; sss: number; bump: number; 
   stone: { spec: 0.06, shin: 8, sss: 0, bump: 1.5, amb: 0.4 },
   cloth: { spec: 0.05, shin: 6, sss: 0.1, bump: 0.7, amb: 0.4 },
   tooth: { spec: 0.6, shin: 40, sss: 0.3, bump: 0.2, amb: 0.5 },
-  dark: { spec: 0.3, shin: 20, sss: 0, bump: 0.3, amb: 0.25 },
+  dark: { spec: 0.02, shin: 8, sss: 0, bump: 0, amb: 0.15 },
   glow: { spec: 0, shin: 1, sss: 0, bump: 0, amb: 1 },
   wood: { spec: 0.08, shin: 10, sss: 0, bump: 1.2, amb: 0.38 },
 };
