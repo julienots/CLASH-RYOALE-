@@ -27,6 +27,8 @@ export interface Visual {
   seed: number;
   /** Variante de silhouette (châssis / arme) pour certains plans. */
   variant?: number;
+  /** Matériau de rendu réaliste (chair, chitine, os, abysse, rouille, pierre). */
+  mat?: string;
 }
 
 export type Ability =

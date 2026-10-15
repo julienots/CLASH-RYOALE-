@@ -7,7 +7,10 @@ import { Battle, type BattleEvent } from '../../sim/battle';
 import { ARENAS, COSMETIC_MAP } from '../../meta/catalog';
 import { applyMatchResult, type MatchMode, setupMatch, summarize } from '../../meta/match';
 import { EVENTS } from '../../meta/events';
-import { BattleView } from '../../render/battleView';
+import { BattleView, UNIT_PX } from '../../render/battleView';
+import { prewarm } from '../../render/spriteCache';
+import { getUnit } from '../../core/cards';
+import type { Visual } from '../../core/types';
 import { cardArtUrl } from '../../render/cardArt';
 import { type App, registerScreen } from '../app';
 import { cardTile, confirmDialog, fmt, h, modal, toast } from '../dom';
@@ -76,6 +79,19 @@ registerScreen('battle', (app, root, params) => {
     quality: settings.quality, damageNumbers: settings.damageNumbers, showGrid: settings.showGrid,
     ground: arena.ground, accent: arena.accent, summonFx: g.data.cosmetics.summonFx,
   });
+  // Pré-calcul des créatures des deux decks (rendu volumétrique) avant le début du combat.
+  let ready = false;
+  const veilBar = h('i', { style: 'width:0%' });
+  const veil = h('div', { class: 'loading-veil' }, h('div', null, h('div', { style: 'font-size:20px;color:var(--crystal)' }, 'Invocation des créatures…'), h('div', { class: 'prog' }, veilBar)));
+  wrap.append(veil);
+  const visuals: Visual[] = [];
+  const addUnit = (id: string) => {
+    const u = getUnit(id);
+    visuals.push(u.visual);
+    for (const a of u.abilities ?? []) if ('unit' in a) visuals.push(getUnit(a.unit).visual);
+  };
+  for (const d of setup.config.decks) for (const e of d) for (const sp of CARD_MAP[e.cardId].spawns ?? []) addUnit(sp.unit);
+  void prewarm(visuals, view.tile * UNIT_PX, (k) => { veilBar.style.width = `${Math.round(k * 100)}%`; }).then(() => { ready = true; veil.remove(); last = performance.now(); });
   const onResize = () => view.resize();
   window.addEventListener('resize', onResize);
 
@@ -128,7 +144,7 @@ registerScreen('battle', (app, root, params) => {
   };
 
   const startDrag = (e: PointerEvent, idx: number) => {
-    if (battle.result || battle.paused) return;
+    if (!ready || battle.result || battle.paused) return;
     e.preventDefault();
     const entry = battle.players[0].hand[idx];
     if (!entry) return;
@@ -214,7 +230,7 @@ registerScreen('battle', (app, root, params) => {
   const loop = (now: number) => {
     const dt = Math.min(0.1, (now - last) / 1000);
     last = now;
-    if (!battle.paused && !battle.result) {
+    if (ready && !battle.paused && !battle.result) {
       bot.update(dt);
       battle.update(dt);
     }

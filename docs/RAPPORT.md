@@ -9,7 +9,7 @@ Rapport honnête : ce qui est fait et vérifié, ce qui est partiel et ce qui re
 | `npm test` (Vitest) | **222 tests, tous verts** |
 | `npm run build` (typage strict + build de production) | OK, ~229 Ko de JS (73 Ko gzip), aucun asset externe |
 | `npm run e2e` (Chromium, viewport 390×844, tactile) | Tous les écrans visités, offrande ouverte, combat réel (6 cartes glissées-déposées + 1 posée au toucher), pause, abandon, résultats, rechargement : progression conservée. **0 erreur JavaScript.** |
-| Fluidité (Chromium headless, rendu logiciel, ~60 unités en mêlée) | ~58 images/s après mise en cache des animations (1 image/s avant) |
+| Fluidité (Chromium headless, rendu logiciel, ~60 unités en mêlée) | ~43–49 images/s avec le rendu réaliste (pré-calcul ~2 s au lancement du combat) ; ~58 images/s en qualité basse |
 | `npm run balance -- 3000` | 3 000 parties bot contre bot en ~95 s ; résultats dans `docs/equilibrage.txt` |
 | Compilation APK Android | **Non réalisée** (voir « Restant ») |
 
@@ -71,6 +71,14 @@ Rapport honnête : ce qui est fait et vérifié, ce qui est partiel et ce qui re
 - **Sauvegarde locale robuste** : enveloppe avec somme de contrôle, copie de secours, relecture de
   vérification, réparation/migration, horloge qui ne recule jamais, identifiants de combat anti-double
   récompense, transactions atomiques.
+- **Rendu réaliste (v0.2)** : créatures modélisées en volumes 3D (ellipsoïdes et capsules fusionnés)
+  et rendues pixel par pixel avec matériaux distincts (chair ridée et veinée avec diffusion sous-cutanée,
+  chitine à écailles brillantes, os poreux, peau abyssale luisante, métal rouillé, pierre), yeux
+  émissifs, membranes translucides ; arène au sol éclairé (terre, dalles de pierre, sang séché, rivière
+  de sang avec berges), ponts de côtes, rochers et ossements sculptés, tours de pierre et d'os avec œil
+  vivant qui suit sa cible et cœur battant. Images d'animation pré-calculées au début du combat
+  (~2 s, écran « Invocation des créatures ») ; illustrations de cartes générées en arrière-plan.
+  La qualité « basse » conserve l'ancien rendu vectoriel, plus léger.
 - **Rendu et audio originaux** : 25 plans corporels procéduraux animés, illustrations de cartes générées
   par le même modèle que l'unité, arène 2.5D (ombres, profondeur, rivière animée), télégraphes de sorts,
   particules en pool plafonnées selon la qualité, chiffres de dégâts, secousses, cache d'animations ;
@@ -84,9 +92,11 @@ Rapport honnête : ce qui est fait et vérifié, ce qui est partiel et ce qui re
 - **Équilibrage** : 4 passes sur 3 000 parties. Il reste 3 cartes à ~65 % de victoires à niveau égal
   (Titan Ossuaire, L'Innommable, Comète de Rouille) et le Piège à Mâchoires à ~35 %. Les bots les jouent
   peut-être mieux ou moins bien qu'un humain : à valider par des parties réelles.
-- **Animations** : animations procédurales par famille (repos, marche, attaque, impact/flash, mort,
-  apparition), mais pas d'animation image par image dessinée à la main ; certaines créatures d'un même
-  plan corporel partagent leur squelette (couleurs, membres, armes et proportions les différencient).
+- **Animations et réalisme** : rendu procédural « sculpture numérique » (volumes, matériaux, éclairage)
+  — nettement plus réaliste que la v0.1 mais ce n'est pas de l'art peint ou de la 3D photoréaliste ;
+  4 à 6 images par animation (repos, marche, attaque). Les sorts restent illustrés en 2D.
+  Des créatures d'un même plan corporel partagent leur squelette (couleurs, membres, armes et
+  proportions les différencient).
 - **Performance Android** : mesurée uniquement dans Chromium headless (rendu logiciel). Non mesurée sur un
   vrai téléphone.
 - **Combat interrompu** : quitter l'application en plein combat ne sauvegarde pas l'état du combat

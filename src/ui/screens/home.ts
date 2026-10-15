@@ -3,7 +3,7 @@ import { DIFFICULTIES, type Difficulty } from '../../sim/ai';
 import { ARENAS, arenaFor } from '../../meta/catalog';
 import { averageCost, deckProblems } from '../../meta/economy';
 import { DIFFICULTY_ORDER } from '../../meta/match';
-import { drawMonster } from '../../render/sprites';
+import { drawCachedMonster } from '../../render/spriteCache';
 import { getUnit } from '../../core/cards';
 import { type App, registerScreen } from '../app';
 import { cardTile, h, modal, toast } from '../dom';
@@ -28,9 +28,10 @@ function heroCanvas(app: App): HTMLCanvasElement {
     g.fillStyle = bg; g.fillRect(0, 0, W, H);
     g.fillStyle = 'rgba(0,0,0,.45)'; g.beginPath(); g.ellipse(W / 2, H * 0.86, W * 0.45, H * 0.08, 0, 0, Math.PI * 2); g.fill();
     monsters.forEach((m, i) => {
-      g.save(); g.translate(W * (0.22 + i * 0.3), H * 0.86); g.globalAlpha = i === 1 ? 1 : 0.85;
-      drawMonster(g, m.visual, { t: t + i, moving: false, attack: (Math.sin(t * 0.8 + i * 2) > 0.92) ? 0.5 : 0 }, H * (i === 1 ? 0.32 : 0.28), i === 2);
-      g.restore();
+      g.globalAlpha = i === 1 ? 1 : 0.85;
+      const atk = Math.sin(t * 0.8 + i * 2) > 0.92 ? 0.5 : 0;
+      drawCachedMonster(g, m.visual, W * (0.22 + i * 0.3), H * 0.86, H * (i === 1 ? 0.3 : 0.26), t + i, false, atk, i === 2);
+      g.globalAlpha = 1;
     });
     // brume
     for (let k = 0; k < 6; k++) {

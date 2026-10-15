@@ -3,7 +3,9 @@ import { CARD_MAP, FACTION_PALETTE, cardPrimaryUnit } from '../core/cards';
 import { RARITY_INFO } from '../core/progression';
 import { Rng } from '../core/rng';
 import type { CardDef } from '../core/types';
-import { alpha, drawMonster, isFlyingPlan, shade } from './sprites';
+import { alpha, isFlyingPlan, shade } from './sprites';
+import { buildCreature } from './anatomy';
+import { renderSculpt } from './sculpt';
 
 const cache = new Map<string, string>();
 
@@ -181,24 +183,22 @@ export function renderCardArt(card: CardDef, w: number, h: number, t = 0.4): HTM
     const px = s / Math.max(0.55, v.scale) * (v.scale < 0.7 ? 0.75 : 1);
     groundShadow(ctx, w / 2, h * 0.9, s * 0.6);
     const count = card.spawns![0].count;
+    // La créature est sculptée en volumes puis éclairée pixel par pixel (même modèle que l'unité en combat).
+    const S = px * v.scale;
+    const pose = { t, moving: false, attack: card.rarity === 'legendaire' || card.rarity === 'abyssal' ? 0.45 : 0 };
+    const layer = renderSculpt(buildCreature(v, pose), w, h, S * (count > 1 ? 0.72 : 1), w / 2, groundY, v.seed, 1.4);
     ctx.save();
-    ctx.translate(w / 2, groundY);
-    // essaim : plusieurs exemplaires
+    ctx.shadowColor = alpha(v.c3, 0.45); ctx.shadowBlur = w * 0.05;
     if (count > 1) {
       const n = Math.min(count, 4);
       for (let i = n - 1; i >= 0; i--) {
-        ctx.save();
-        const ox = (i - (n - 1) / 2) * w * 0.22, oy = (i % 2) * -h * 0.05;
-        ctx.translate(ox, oy);
-        const k = 0.75;
-        ctx.shadowColor = alpha(v.c3, 0.6); ctx.shadowBlur = w * 0.04;
-        drawMonster(ctx, v, { t: t + i * 0.3, moving: false, attack: 0 }, px * k, i % 2 === 1);
+        const ox = (i - (n - 1) / 2) * w * 0.24, oy = (i % 2) * -h * 0.05;
+        ctx.save(); ctx.translate(ox, oy);
+        if (i % 2) { ctx.translate(w, 0); ctx.scale(-1, 1); }
+        ctx.drawImage(layer, 0, 0);
         ctx.restore();
       }
-    } else {
-      ctx.shadowColor = alpha(v.c3, 0.7); ctx.shadowBlur = w * 0.05;
-      drawMonster(ctx, v, { t, moving: false, attack: card.rarity === 'legendaire' || card.rarity === 'abyssal' ? 0.45 : 0 }, px);
-    }
+    } else ctx.drawImage(layer, 0, 0);
     ctx.restore();
   } else spellArt(ctx, card, w, h, rng);
   vignette(ctx, w, h, rng);
@@ -213,4 +213,28 @@ export function cardArtUrl(cardId: string, w = 240, h = 300): string {
     cache.set(key, url);
   }
   return url;
+}
+
+/** Version asynchrone : génère les illustrations une par une sans figer l'interface. */
+const queue: { key: string; id: string; w: number; h: number; res: ((u: string) => void)[] }[] = [];
+let pumping = false;
+export function cardArtCached(cardId: string, w = 240, h = 300): string | undefined { return cache.get(`${cardId}:${w}x${h}`); }
+export function cardArtAsync(cardId: string, w = 240, h = 300): Promise<string> {
+  const key = `${cardId}:${w}x${h}`;
+  const hit = cache.get(key);
+  if (hit) return Promise.resolve(hit);
+  return new Promise((res) => {
+    const q = queue.find((x) => x.key === key);
+    if (q) q.res.push(res); else queue.push({ key, id: cardId, w, h, res: [res] });
+    if (!pumping) { pumping = true; setTimeout(pump, 0); }
+  });
+}
+function pump(): void {
+  const t0 = performance.now();
+  while (queue.length && performance.now() - t0 < 30) {
+    const j = queue.shift()!;
+    const url = cardArtUrl(j.id, j.w, j.h);
+    j.res.forEach((r) => r(url));
+  }
+  if (queue.length) setTimeout(pump, 0); else pumping = false;
 }

@@ -12,12 +12,13 @@ export const FACTION_PALETTE: Record<Faction, { c1: string; c2: string; c3: stri
 };
 
 let seedCounter = 1;
+const FACTION_MATERIAL: Record<Faction, string> = { chitine: 'chitin', ossuaire: 'bone', chair: 'flesh', abysse: 'abyss', rouille: 'rust' };
 function vis(plan: BodyPlan, scale: number, f: Faction, o: Partial<Visual> = {}): Visual {
   const p = FACTION_PALETTE[f];
   return {
     plan, scale, c1: p.c1, c2: p.c2, c3: p.c3,
     eyes: 2, spikes: 0, limbs: 2, tentacles: 0, horns: 0,
-    seed: seedCounter++ * 7919, ...o,
+    seed: seedCounter++ * 7919, mat: FACTION_MATERIAL[f], ...o,
   };
 }
 

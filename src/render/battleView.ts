@@ -6,7 +6,9 @@ import type { CardDef, PlayerId } from '../core/types';
 import { ARENA_H, ARENA_W, Battle, BRIDGE_HALF, BRIDGES, type BattleEvent, type Entity, RIVER_HALF, RIVER_Y } from '../sim/battle';
 import { FxPool } from './fx';
 import { alpha, setLowDetail, shade } from './sprites';
-import { clearSpriteCache, drawCachedMonster } from './spriteCache';
+import { clearSpriteCache, drawCachedMonster, setRealistic } from './spriteCache';
+import { buildRealGround, buildTowerSprite } from './arenaArt';
+import { mix, renderSculpt, Sculpt } from './sculpt';
 
 export interface ViewOptions { quality: 'basse' | 'moyenne' | 'haute'; damageNumbers: boolean; showGrid: boolean; ground: string; accent: string; summonFx: string }
 
@@ -14,7 +16,7 @@ export interface DeployPreview { card: CardDef; x: number; y: number; legal: boo
 
 const TEAM = ['#5aa9ff', '#ff4d5a'];
 /** Taille d'affichage des unités (en cases) : plus grande que l'empreinte physique pour la lisibilité. */
-const UNIT_PX = 1.4;
+export const UNIT_PX = 1.4;
 
 export class BattleView {
   readonly ctx: CanvasRenderingContext2D;
@@ -35,6 +37,7 @@ export class BattleView {
     this.ctx = canvas.getContext('2d')!;
     this.fx = new FxPool(opts.quality === 'basse' ? 150 : opts.quality === 'moyenne' ? 350 : 600);
     setLowDetail(opts.quality === 'basse');
+    setRealistic(opts.quality !== 'basse');
     this.resize();
   }
 
@@ -62,7 +65,15 @@ export class BattleView {
   sy(y: number): number { return this.oy + y * this.tile; }
 
   // ------------------------------------------------------------------ sol pré-rendu
+  get realistic(): boolean { return this.opts.quality !== 'basse'; }
+  private towerSprites = new Map<string, { img: HTMLCanvasElement; ax: number; ay: number }>();
+  private heartImg: HTMLCanvasElement | null = null;
+
   private buildGround(): HTMLCanvasElement {
+    if (this.realistic) {
+      this.towerSprites.clear(); this.heartImg = null;
+      return buildRealGround(this.canvas.width, this.canvas.height, this.ox, this.oy, this.tile, this.opts.ground, this.opts.accent, this.opts.showGrid);
+    }
     const c = document.createElement('canvas');
     c.width = this.canvas.width; c.height = this.canvas.height;
     const g = c.getContext('2d')!;
@@ -125,6 +136,25 @@ export class BattleView {
 
   private drawRiver(): void {
     const g = this.ctx, T = this.tile;
+    if (this.realistic) {
+      // le lit de la rivière est dans le sol pré-rendu : on n'anime que les reflets du courant
+      const y0 = this.sy(RIVER_Y - RIVER_HALF * 0.85), hh = RIVER_HALF * 1.7 * T;
+      g.save(); g.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 7; i++) {
+        const yy = y0 + hh * ((i + 0.5) / 7);
+        const off = ((this.time * 0.7 * T + i * 53) % (T * 4));
+        g.strokeStyle = `rgba(255,120,120,${0.05 + (i % 3) * 0.03})`; g.lineWidth = Math.max(1, T * 0.05);
+        g.beginPath();
+        for (let x = -4; x < ARENA_W + 4; x += 4) {
+          const xx = this.sx(x) + off;
+          if (BRIDGES.some((b) => Math.abs((xx - this.ox) / T - b) < BRIDGE_HALF + 0.3)) continue;
+          g.moveTo(xx, yy); g.quadraticCurveTo(xx + T * 0.8, yy + Math.sin(this.time + i) * 2, xx + T * 1.6, yy);
+        }
+        g.stroke();
+      }
+      g.restore();
+      return;
+    }
     const y0 = this.sy(RIVER_Y - RIVER_HALF), h = RIVER_HALF * 2 * T;
     const grad = g.createLinearGradient(0, y0, 0, y0 + h);
     grad.addColorStop(0, '#1a0608'); grad.addColorStop(0.5, '#4a0f16'); grad.addColorStop(1, '#1a0608');
@@ -324,6 +354,7 @@ export class BattleView {
   }
 
   private drawTower(e: Entity, me: PlayerId): void {
+    if (this.realistic) { this.drawRealTower(e, me); return; }
     const g = this.ctx, T = this.tile;
     const x = this.sx(e.x), y = this.sy(e.y);
     const mine = e.owner === me;
@@ -396,6 +427,74 @@ export class BattleView {
     g.beginPath(); g.roundRect(bx, by, w * Math.max(0, e.hp / e.maxHp), h, 3); g.fill();
     g.fillStyle = '#fff'; g.font = `800 ${Math.round(h * 0.85)}px system-ui, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
     g.fillText(String(Math.ceil(e.hp)), x, by + h / 2 + 1);
+    g.textBaseline = 'alphabetic';
+  }
+
+  private drawRealTower(e: Entity, me: PlayerId): void {
+    const g = this.ctx, T = this.tile;
+    const x = this.sx(e.x), y = this.sy(e.y);
+    const mine = e.owner === me;
+    const team = TEAM[mine ? 0 : 1];
+    const king = e.towerType === 'king';
+    const key = `${e.towerType}|${team}|${e.alive ? 1 : 0}`;
+    let spr = this.towerSprites.get(key);
+    if (!spr) { spr = buildTowerSprite(king ? 'king' : 'princess', team, T, !e.alive); this.towerSprites.set(key, spr); }
+    g.drawImage(spr.img, x - spr.ax, y - spr.ay);
+    if (!e.alive) return;
+    const tiers = king ? 4 : 3;
+    const topY = (0.45 + tiers * 0.6 - 0.2) * Math.cos(0.5) * T;
+    if (king) {
+      // cœur battant sculpté
+      if (!this.heartImg) {
+        const sc = new Sculpt(); sc.pitch = 0.4;
+        sc.ell([0, 0.5, 0], [0.55, 0.6, 0.5], '#8a1424', 'flesh', { col2: '#3a0610' });
+        sc.ell([-0.2, 0.75, 0.1], [0.3, 0.3, 0.3], '#9a1a2a', 'flesh');
+        sc.ell([0.22, 0.78, 0.05], [0.28, 0.28, 0.28], '#8a1424', 'flesh');
+        for (const [ax, az] of [[-0.15, 0], [0.12, 0.1], [0.05, -0.15]]) sc.cap([ax, 0.95, az], [ax * 1.5, 1.35, az * 1.5], 0.09, 0.07, '#6a0e1a', 'flesh');
+        const sz = Math.ceil(T * 1.8);
+        this.heartImg = renderSculpt(sc, sz, sz, T, sz / 2, sz * 0.92, 77, 1);
+      }
+      const pulse = 1 + Math.max(0, Math.sin(this.time * 3.2)) * 0.07 + (e.active ? 0.03 : 0);
+      const hw = this.heartImg.width * pulse;
+      g.save();
+      if (!e.active) g.globalAlpha = 0.85;
+      g.drawImage(this.heartImg, x - hw / 2, y - topY - this.heartImg.height * pulse * 0.92, hw, this.heartImg.height * pulse);
+      g.restore();
+      if (e.active) {
+        const gr = g.createRadialGradient(x, y - topY - T * 0.6, 0, x, y - topY - T * 0.6, T * 1.4);
+        gr.addColorStop(0, 'rgba(255,60,60,0.25)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+        g.fillStyle = gr; g.fillRect(x - T * 1.5, y - topY - T * 2, T * 3, T * 3);
+      }
+    } else {
+      // œil vivant dans l'orbite de pierre
+      const ex = x + T * 0.12, ey = y - topY + T * 0.05, er = T * 0.38;
+      const t = this.battle.byId(e.targetId);
+      const lx = t ? Math.max(-1, Math.min(1, (t.x - e.x) / 4)) * er * 0.35 : Math.sin(this.time * 0.8 + e.id) * er * 0.25;
+      const ly = t ? Math.max(-1, Math.min(1, (t.y - e.y) / 6)) * er * 0.2 : 0;
+      g.save();
+      const sclera = g.createRadialGradient(ex - er * 0.3, ey - er * 0.3, er * 0.1, ex, ey, er);
+      sclera.addColorStop(0, '#f4ece0'); sclera.addColorStop(0.7, '#d8c4b4'); sclera.addColorStop(1, '#7a4040');
+      g.fillStyle = sclera; g.beginPath(); g.ellipse(ex, ey, er * 1.15, er * 0.85, 0, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = 'rgba(150,20,30,0.5)'; g.lineWidth = 1;
+      for (let k = 0; k < 6; k++) { const a = k * 1.05 + e.id; g.beginPath(); g.moveTo(ex + Math.cos(a) * er, ey + Math.sin(a) * er * 0.75); g.quadraticCurveTo(ex + Math.cos(a + 0.3) * er * 0.6, ey + Math.sin(a + 0.3) * er * 0.5, ex + Math.cos(a) * er * 0.45, ey + Math.sin(a) * er * 0.35); g.stroke(); }
+      if (this.opts.quality === 'haute') { g.shadowColor = team; g.shadowBlur = er; }
+      const iris = g.createRadialGradient(ex + lx, ey + ly, er * 0.05, ex + lx, ey + ly, er * 0.55);
+      iris.addColorStop(0, '#ffffff'); iris.addColorStop(0.3, team); iris.addColorStop(1, mix(team, '#000000', 0.6));
+      g.fillStyle = iris; g.beginPath(); g.arc(ex + lx, ey + ly, er * 0.55, 0, Math.PI * 2); g.fill();
+      g.shadowBlur = 0;
+      g.fillStyle = '#050304'; g.beginPath(); g.ellipse(ex + lx, ey + ly, er * 0.14, er * 0.42, 0, 0, Math.PI * 2); g.fill();
+      g.fillStyle = 'rgba(255,255,255,0.8)'; g.beginPath(); g.arc(ex + lx - er * 0.2, ey + ly - er * 0.2, er * 0.1, 0, Math.PI * 2); g.fill();
+      g.restore();
+    }
+    // barre de vie + valeur
+    const r = e.radius * T;
+    const w = r * 2.1, hb = Math.max(5, T * 0.28);
+    const bx = x - w / 2, by = y - topY - (king ? T * 1.9 : T * 1.0);
+    g.fillStyle = 'rgba(0,0,0,0.75)'; g.beginPath(); g.roundRect(bx - 2, by - 2, w + 4, hb + 4, 4); g.fill();
+    g.fillStyle = mine ? '#4da3ff' : '#ff4d5a';
+    g.beginPath(); g.roundRect(bx, by, w * Math.max(0, e.hp / e.maxHp), hb, 3); g.fill();
+    g.fillStyle = '#fff'; g.font = `800 ${Math.round(hb * 0.85)}px system-ui, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(String(Math.ceil(e.hp)), x, by + hb / 2 + 1);
     g.textBaseline = 'alphabetic';
   }
 

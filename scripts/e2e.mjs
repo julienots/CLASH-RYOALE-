@@ -35,7 +35,10 @@ await step('combat', async () => {
   await page.click('.nav button:has-text("Combat")');
   await page.click('button.fight');
   await page.waitForSelector('.arena-wrap canvas');
-  await page.waitForTimeout(1500);
+  const tPre = Date.now();
+  await page.waitForSelector('.loading-veil', { state: 'detached', timeout: 60000 });
+  console.log(`   pré-calcul des créatures : ${((Date.now() - tPre) / 1000).toFixed(1)} s`);
+  await page.waitForTimeout(500);
   const canvas = await page.$('.arena-wrap canvas');
   const box = await canvas.boundingBox();
   // Glisser chaque carte jouable dans notre camp

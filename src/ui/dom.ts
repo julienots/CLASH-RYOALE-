@@ -2,7 +2,7 @@
 import { CARD_MAP } from '../core/cards';
 import { RARITY_INFO } from '../core/progression';
 import { audio } from '../audio/audio';
-import { cardArtUrl } from '../render/cardArt';
+import { cardArtAsync, cardArtCached } from '../render/cardArt';
 import type { CardOwnership } from '../meta/state';
 import { fragmentsToUpgrade } from '../core/progression';
 import { CHESTS } from '../meta/catalog';
@@ -80,7 +80,7 @@ export function cardTile(cardId: string, own?: CardOwnership, opts: { showLevel?
   const canUp = own?.owned && needed !== null && own.fragments >= needed;
   const legend = c.rarity === 'legendaire' || c.rarity === 'abyssal';
   const el = h('div', { class: `card${locked ? ' locked' : ''}${legend ? ' legend' : ''} ${opts.extraClass ?? ''}`, style: `--rc:${r.color}`, 'data-card': cardId, onclick: opts.onclick },
-    h('div', { class: 'art', style: `background-image:url(${cardArtUrl(cardId)})` }),
+    artDiv(cardId),
     h('div', { class: 'cost' }, c.cost),
     opts.showLevel && own?.owned ? h('div', { class: 'lv' }, `Niv. ${own.level}`) : null,
     canUp ? h('div', { class: 'up' }, '▲') : null,
@@ -103,4 +103,12 @@ export function rarityChip(rarity: keyof typeof RARITY_INFO): HTMLElement {
 /** Ajoute des enfants en ignorant les valeurs nulles. */
 export function add(root: HTMLElement, ...children: (Node | string | null | undefined | false)[]): void {
   for (const c of children) if (c !== null && c !== undefined && c !== false) root.append(c);
+}
+
+/** Zone d'illustration : affichée immédiatement si en cache, sinon générée en arrière-plan. */
+function artDiv(cardId: string): HTMLElement {
+  const cached = cardArtCached(cardId);
+  const el = h('div', { class: `art${cached ? '' : ' loading'}`, style: cached ? `background-image:url(${cached})` : '' });
+  if (!cached) void cardArtAsync(cardId).then((u) => { el.style.backgroundImage = `url(${u})`; el.classList.remove('loading'); });
+  return el;
 }

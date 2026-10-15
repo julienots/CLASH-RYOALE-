@@ -68,8 +68,12 @@ src/
                ai.ts : IA (Initié, Chasseur, Cauchemar, Abyssal)
   meta/        sauvegarde (somme de contrôle + copie de secours), économie, coffres, boutique,
                SUPER PASS, missions, succès, événements, préparation/récompenses des combats, horloge
-  render/      sprites.ts : 25 plans corporels procéduraux ; cardArt.ts : illustrations de cartes
-               (même modèle que l'unité) ; battleView.ts : rendu 2.5D ; fx.ts : particules en pool
+  render/      sculpt.ts : moteur de « sculpture » volumétrique (ellipsoïdes, capsules fusionnées,
+               rendu par pixel : relief, peau/chitine/os/métal/pierre, diffusion sous-cutanée, reflets)
+               anatomy.ts : anatomie 3D animée des 25 plans corporels ; arenaArt.ts : sol, rivière,
+               ponts, rochers, ossements et tours sculptés ; spriteCache.ts : cache + pré-calcul des
+               animations ; cardArt.ts : illustrations (même modèle que l'unité) ; battleView.ts : combat ;
+               sprites.ts : rendu vectoriel simplifié (qualité « basse ») ; fx.ts : particules en pool
   audio/       sons et musique synthétisés (WebAudio), volumes séparés
   ui/          coquille, navigation et 12 écrans
 tests/         Vitest : cartes, combat, capacités, IA, méta, sauvegarde
